@@ -77,7 +77,7 @@ public class Gui extends Application implements Runnable {
 		System.out.println("Gui started");
 		primaryStage.setTitle("Beamer GUI");
 		URL iconPath;
-		iconPath = getClass().getResource("/laser.png");
+		iconPath = getClass().getResource("/icon.png");
 		primaryStage.getIcons().add(new Image(iconPath.toString()));
 		primaryStage.show();
 		// primaryStage.setFullScreen(true);
