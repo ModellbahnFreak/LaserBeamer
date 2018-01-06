@@ -1,7 +1,7 @@
 # LaserBeamer
 A java application to use a video projector (beamer) like a show laser.
 
->A (not always up to date) version of the app is available as "LaserBeamer.jar". It requires Java 1.8 or 9 to run.
+>A (not always up to date) version of the app is available as "[LaserBeamer.jar](https://github.com/ModellbahnFreak/LaserBeamer/raw/master/build/LaserBeamer.jar)" in the "build" Directory. It requires Java 1.8 or 9 to run. *Detailed instructions in the Wiki*
 
 To control the "laser" the client software ([LaserClient](https://github.com/ModellbahnFreak/LaserClient)) is needed.
 
