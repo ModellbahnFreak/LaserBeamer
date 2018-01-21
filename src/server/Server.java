@@ -6,6 +6,8 @@ import server.Gui;
 
 public class Server {
 	
+	//Test
+	
 	public static Settings einst = new Settings();
 	//private static ImageStream imgStream = new ImageStream(8083);
 	public static String homeDirectory = "./";
