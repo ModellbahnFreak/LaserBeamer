@@ -10,14 +10,17 @@ import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import sequence.DeleteHandler;
 import sequence.NodeCreator;
 import sequence.Sequence;
 
 public class NetwProcess extends Thread {
-	private final Queue<String> _comm;
-	private final Queue<String> _SendComm;
+	private final Queue<String> _recvData;
+	private final Queue<String> _sendData;
 	private ArrayList<Node> elem = new ArrayList<Node>();
 	private ArrayList<Sequence> sequenzen = new ArrayList<Sequence>();
 	private boolean SeqInputAct = false;
@@ -34,23 +37,23 @@ public class NetwProcess extends Thread {
 		}
 	};
 
-	public NetwProcess(Queue<String> comm, Queue<String> SendComm) {
-		_comm = comm;
-		_SendComm = SendComm;
+	public NetwProcess(Queue<String> recvData, Queue<String> sendData) {
+		_recvData = recvData;
+		_sendData = sendData;
 		setDaemon(true);
 	}
 
 	@Override
 	public void run() {
 		System.out.println("Verarb waret");
-		while (true) {
+		while (!Thread.currentThread().isInterrupted()) {
 			String commText = null;
-			synchronized (_comm) {
-				commText = _comm.poll();
+			synchronized (_recvData) {
+				commText = _recvData.poll();
 			}
 			if (commText != null) {
 				String[] ToDos = commText.split(";");
-				System.out.println("Received cmd: " + ToDos[0]);
+				System.out.println("Process cmd: " + commText);
 				switch (ToDos[0]) {
 				/*
 				 * case "img": createImg(ToDos); break; case "vid": createVid(ToDos); break;
@@ -100,8 +103,8 @@ public class NetwProcess extends Thread {
 					} else {
 						Node nodeNeu = NodeCreator.cmdToNode(commText, DeleteCallback);
 						if (nodeNeu != null) {
-							synchronized (_SendComm) {
-								_SendComm.add("201:" + nodeNeu.getId());
+							synchronized (_sendData) {
+								_sendData.add("201:" + nodeNeu.getId());
 								System.out.println("201: Created " + nodeNeu.getId());
 							}
 							elem.add(nodeNeu);
@@ -125,12 +128,16 @@ public class NetwProcess extends Thread {
 						((MediaView) obj).setFitHeight(Double.parseDouble(value) * Gui.INSTANCE.scene.getHeight());
 					} else if (obj instanceof Rectangle) {
 						((Rectangle) obj).setHeight(Double.parseDouble(value) * Gui.INSTANCE.scene.getHeight());
+					} else if (obj instanceof Circle) {
+						((Circle) obj).setRadius((Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth())/2.0);
+					} else if (obj instanceof Line) {
+						((Line) obj).setEndY(((Line) obj).getStartY() + (Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth()));
 					}
 				}
 			}
 		} catch (NumberFormatException e) {
-			synchronized (_SendComm) {
-				_SendComm.add("102:");
+			synchronized (_sendData) {
+				_sendData.add("102:");
 				System.out.println("102: Wrong number format");
 			}
 		}
@@ -146,12 +153,16 @@ public class NetwProcess extends Thread {
 						((MediaView) obj).setFitWidth(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
 					} else if (obj instanceof Rectangle) {
 						((Rectangle) obj).setWidth(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
+					} else if (obj instanceof Circle) {
+						((Circle) obj).setRadius((Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth())/2.0);
+					} else if (obj instanceof Line) {
+						((Line) obj).setEndX(((Line) obj).getStartX() + (Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth()));
 					}
 				}
 			}
 		} catch (NumberFormatException e) {
-			synchronized (_SendComm) {
-				_SendComm.add("102:");
+			synchronized (_sendData) {
+				_sendData.add("102:");
 				System.out.println("102: Wrong number format");
 			}
 		}
@@ -167,12 +178,18 @@ public class NetwProcess extends Thread {
 						((MediaView) obj).setY(Double.parseDouble(value) * Gui.INSTANCE.scene.getHeight());
 					} else if (obj instanceof Rectangle) {
 						((Rectangle) obj).setY(Double.parseDouble(value) * Gui.INSTANCE.scene.getHeight());
+					} else if (obj instanceof Text) {
+						((Text) obj).setY(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
+					} else if (obj instanceof Circle) {
+						((Circle) obj).setCenterY(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
+					} else if (obj instanceof Line) {
+						((Line) obj).setStartY(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
 					}
 				}
 			}
 		} catch (NumberFormatException e) {
-			synchronized (_SendComm) {
-				_SendComm.add("102:");
+			synchronized (_sendData) {
+				_sendData.add("102:");
 				System.out.println("102: Wrong number format");
 			}
 		}
@@ -188,19 +205,25 @@ public class NetwProcess extends Thread {
 						((MediaView) obj).setX(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
 					} else if (obj instanceof Rectangle) {
 						((Rectangle) obj).setX(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
+					} else if (obj instanceof Text) {
+						((Text) obj).setX(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
+					} else if (obj instanceof Circle) {
+						((Circle) obj).setCenterX(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
+					} else if (obj instanceof Line) {
+						((Line) obj).setStartX(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
 					}
 				}
 			}
 		} catch (NumberFormatException e) {
-			synchronized (_SendComm) {
-				_SendComm.add("102:");
+			synchronized (_sendData) {
+				_sendData.add("102:");
 				System.out.println("102: Wrong number format");
 			}
 		}
 	}
 
 	private void blackout(String status) {
-		if (_blackoutState == 0) {
+		/*if (_blackoutState == 0) {
 			// Noch nicht erstellt
 			Rectangle BORect = new Rectangle(0, 0);
 			BORect.setWidth(Gui.INSTANCE.scene.getWidth());
@@ -229,8 +252,8 @@ public class NetwProcess extends Thread {
 			((Rectangle) BlackoutObj).setWidth(Gui.INSTANCE.scene.getWidth());
 			((Rectangle) BlackoutObj).setHeight(Gui.INSTANCE.scene.getHeight());
 			BlackoutObj.setOpacity(1);
-			synchronized (_SendComm) {
-				_SendComm.add("304:1");
+			synchronized (_sendData) {
+				_sendData.add("304:1");
 				System.out.println("304: Enabled blackout");
 			}
 			_blackoutState = 3;
@@ -239,11 +262,18 @@ public class NetwProcess extends Thread {
 			// Angezeigt
 			BlackoutObj.setOpacity(0);
 			// BlackoutObj.toBack();
-			synchronized (_SendComm) {
-				_SendComm.add("304:0");
+			synchronized (_sendData) {
+				_sendData.add("304:0");
 				System.out.println("232: Disabled blackout");
 			}
 			_blackoutState = 2;
+		}*/
+		try {
+			double Helligk = Double.parseDouble(status);
+			Gui.INSTANCE.root.setOpacity(Helligk);
+		} catch (Exception e) {
+			System.out.println("Keine Zahl");
+			Gui.INSTANCE.root.setOpacity(1);
 		}
 	}
 
@@ -253,15 +283,15 @@ public class NetwProcess extends Thread {
 			if ("1".equals(toDos[2])) {
 				Server.einst.setStateScreenshActive(true);
 				Server.StartLivestream();
-				synchronized (_SendComm) {
-					_SendComm.add("231:");
+				synchronized (_sendData) {
+					_sendData.add("231:");
 					System.out.println("231: Enabled screenshot");
 				}
 			} else {
 				Server.einst.setStateScreenshActive(false);
 				Server.StopLivestream();
-				synchronized (_SendComm) {
-					_SendComm.add("232:");
+				synchronized (_sendData) {
+					_sendData.add("232:");
 					System.out.println("232: Disabled screenshot");
 				}
 			}
@@ -277,39 +307,39 @@ public class NetwProcess extends Thread {
 			File vidOrdner = new File(Server.homeDirectory + "/content");
 			if (vidOrdner.exists()) {
 				ArrayList<File> dateien = new ArrayList<File>(Arrays.asList(vidOrdner.listFiles()));
-				synchronized (_SendComm) {
-					_SendComm.add("421:");
+				synchronized (_sendData) {
+					_sendData.add("421:");
 					System.out.println("421: Video list start");
 					for (File f : dateien) {
 						String endung = getExtension(f.getName()).toLowerCase();
 						// System.out.println(endung);
 						switch (endung) {
 						case "mp4":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "mp3":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "aif":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "aiff":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "wav":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "fxm":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						}
 					}
-					_SendComm.add("422:");
+					_sendData.add("422:");
 					System.out.println("422: Video list end");
 				}
 			} else {
-				synchronized (_SendComm) {
-					_SendComm.add("311:");
+				synchronized (_sendData) {
+					_sendData.add("311:");
 					System.out.println("311: content folder not found");
 				}
 			}
@@ -318,51 +348,66 @@ public class NetwProcess extends Thread {
 			File imgOrdner = new File(Server.homeDirectory + "/content");
 			if (imgOrdner.exists()) {
 				ArrayList<File> dateien = new ArrayList<File>(Arrays.asList(imgOrdner.listFiles()));
-				synchronized (_SendComm) {
-					_SendComm.add("423:");
+				synchronized (_sendData) {
+					_sendData.add("423:");
 					System.out.println("423: Img list start");
 					for (File f : dateien) {
 						String endung = getExtension(f.getName()).toLowerCase();
 						// System.out.println(endung);
 						switch (endung) {
 						case "jpg":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "jpeg":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "png":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "gif":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "bmp":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						case "fxm":
-							_SendComm.add(f.getPath());
+							_sendData.add(f.getPath());
 							break;
 						}
 					}
-					_SendComm.add("424:");
+					_sendData.add("424:");
 					System.out.println("424: Img list end");
 				}
 			} else {
-				synchronized (_SendComm) {
-					_SendComm.add("311:");
+				synchronized (_sendData) {
+					_sendData.add("311:");
 					System.out.println("311: content folder not found");
 				}
 			}
 			break;
 		case "objs":
-			synchronized (_SendComm) {
-				_SendComm.add("425:");
+			synchronized (_sendData) {
+				_sendData.add("425:");
 				System.out.println("311: Obj list start");
 				for (Node obj : elem) {
-					_SendComm.add(obj.getId());
+					String elemName = "";
+					if (obj instanceof Circle) {
+						elemName += "Circle:";
+					} else if (obj instanceof Rectangle) {
+						elemName += "Rectangle:";
+					} else if (obj instanceof Line) {
+						elemName += "Line:";
+					} else if (obj instanceof MediaView) {
+						elemName += "MediaView:";
+					} else if (obj instanceof ImageView) {
+						elemName += "ImageView:";
+					} else if (obj instanceof Text) {
+						elemName += "Text:";
+					}
+					elemName += obj.getId();
+					_sendData.add(elemName);
 				}
-				_SendComm.add("426:");
+				_sendData.add("426:");
 				System.out.println("426: Obj list end");
 			}
 			break;
@@ -385,21 +430,21 @@ public class NetwProcess extends Thread {
 			if (toDos.length == 2 && !toDos[1].isEmpty()) {
 				SeqInputAct = true;
 				NewSeqName = toDos[1];
-				synchronized (_SendComm) {
-					_SendComm.add("202:End with 'SeqEnd'");
+				synchronized (_sendData) {
+					_sendData.add("202:End with 'SeqEnd'");
 					System.out.println("202: Sequence Input starting");
 				}
 				SeqCmds = new ArrayList<String>();
 			} else {
-				synchronized (_SendComm) {
-					_SendComm.add("321:");
-					_SendComm.add("101:");
+				synchronized (_sendData) {
+					_sendData.add("321:");
+					_sendData.add("101:");
 					System.out.println("321, 101: No Sequence name given");
 				}
 			}
 		} else {
-			synchronized (_SendComm) {
-				_SendComm.add("103:");
+			synchronized (_sendData) {
+				_sendData.add("103:");
 				System.out.println("103: Sequence Input already active");
 			}
 		}
@@ -413,8 +458,8 @@ public class NetwProcess extends Thread {
 				System.out.println("If");
 				seq.run();
 				System.out.println("Launched");
-				synchronized (_SendComm) {
-					_SendComm.add("212:" + toDos[1]);
+				synchronized (_sendData) {
+					_sendData.add("212:" + toDos[1]);
 					System.out.println("212: Started Sequence " + toDos[1]);
 				}
 			}
@@ -435,16 +480,16 @@ public class NetwProcess extends Thread {
 	private void sequenceEnd() {
 		if (SeqInputAct == true) {
 			SeqInputAct = false;
-			synchronized (_SendComm) {
-				_SendComm.add("203:" + NewSeqName);
+			synchronized (_sendData) {
+				_sendData.add("203:" + NewSeqName);
 				System.out.println("203: Ended sequence input");
 			}
 			sequenzen.add(new Sequence(SeqCmds, NewSeqName));
 			SeqCmds = null;
 		} else {
-			synchronized (_SendComm) {
-				_SendComm.add("103:");
-				_SendComm.add("321:");
+			synchronized (_sendData) {
+				_sendData.add("103:");
+				_sendData.add("321:");
 				System.out.println("103, 321: No Sequence active");
 			}
 		}
@@ -462,8 +507,8 @@ public class NetwProcess extends Thread {
 			}
 			elem.clear();
 			sequenzen.clear();
-			synchronized (_SendComm) {
-				_SendComm.add("321:");
+			synchronized (_sendData) {
+				_sendData.add("321:");
 				System.out.println("Deleted all");
 			}
 		} else {
@@ -472,8 +517,8 @@ public class NetwProcess extends Thread {
 				if (obj.getId().equals(objName)) {
 					Gui.INSTANCE.delNodeList.add(obj);
 					delNum.add(obj);
-					synchronized (_SendComm) {
-						_SendComm.add("322:" + objName);
+					synchronized (_sendData) {
+						_sendData.add("322:" + objName);
 						System.out.println("322: Deleted " + objName);
 					}
 				}

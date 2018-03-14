@@ -283,7 +283,7 @@ public class NodeCreator {
 	private static Node showText(String[] toDos, String sendData) {
 		try {
 			int textStart = sendData.indexOf("'") + 1;
-			int textEnd = sendData.lastIndexOf("'") - 1;
+			int textEnd = sendData.lastIndexOf("'");
 			String text = sendData.substring(textStart, textEnd);
 			if (text.length() <= 0 || text.isEmpty()) {
 				text = toDos[4];
