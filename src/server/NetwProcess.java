@@ -17,12 +17,13 @@ import javafx.scene.text.Text;
 import sequence.DeleteHandler;
 import sequence.NodeCreator;
 import sequence.Sequence;
+import sequenceNew.Sequenz;
 
 public class NetwProcess extends Thread {
 	private final Queue<String> _recvData;
 	private final Queue<String> _sendData;
 	private ArrayList<Node> elem = new ArrayList<Node>();
-	private ArrayList<Sequence> sequenzen = new ArrayList<Sequence>();
+	private ArrayList<Sequenz> sequenzen = new ArrayList<Sequenz>();
 	private boolean SeqInputAct = false;
 	private ArrayList<String> SeqCmds = null;
 	private String NewSeqName = "";
@@ -70,9 +71,9 @@ public class NetwProcess extends Thread {
 						closeConnection();
 					}
 					break;
-				case "SeqEnd":
+				/*case "SeqEnd":
 					sequenceEnd();
-					break;
+					break;*/
 				case "playSeq":
 					playSequence(ToDos);
 					break;
@@ -98,9 +99,9 @@ public class NetwProcess extends Thread {
 					editPreferences(ToDos);
 					break;
 				default:
-					if (SeqInputAct == true) {
+					/*if (SeqInputAct == true) {
 						createSequence(commText);
-					} else {
+					} else {*/
 						Node nodeNeu = NodeCreator.cmdToNode(commText, DeleteCallback);
 						if (nodeNeu != null) {
 							synchronized (_sendData) {
@@ -110,7 +111,7 @@ public class NetwProcess extends Thread {
 							elem.add(nodeNeu);
 							Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(nodeNeu)));
 						}
-					}
+					//}
 					break;
 				}
 				// Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(mediaView)));
@@ -424,6 +425,24 @@ public class NetwProcess extends Thread {
 			return null;
 		}
 	}
+	
+	private void sequenceEnd() {
+		if (SeqInputAct == true) {
+			SeqInputAct = false;
+			synchronized (_sendData) {
+				_sendData.add("203:" + NewSeqName);
+				System.out.println("203: Ended sequence input");
+			}
+			sequenzen.add(new Sequenz(SeqCmds, NewSeqName));
+			SeqCmds = null;
+		} else {
+			synchronized (_sendData) {
+				_sendData.add("103:");
+				_sendData.add("321:");
+				System.out.println("103, 321: No Sequence active");
+			}
+		}
+	}
 
 	private void startSeqInput(String[] toDos) {
 		if (SeqInputAct != true) {
@@ -435,6 +454,18 @@ public class NetwProcess extends Thread {
 					System.out.println("202: Sequence Input starting");
 				}
 				SeqCmds = new ArrayList<String>();
+				String cmdText = _recvData.poll();
+				while(!"SeqEnd".equals(cmdText) && !"connection;close".equals(cmdText)) {
+					if (cmdText != null) {
+						SeqCmds.add(cmdText);
+					}
+					cmdText = _recvData.poll();
+				}
+				if ("SeqEnd".equals(cmdText)) {
+					sequenceEnd();
+				} else {
+					closeConnection();
+				}
 			} else {
 				synchronized (_sendData) {
 					_sendData.add("321:");
@@ -452,11 +483,11 @@ public class NetwProcess extends Thread {
 
 	private void playSequence(String[] toDos) {
 		System.out.println("Starting");
-		for (Sequence seq : sequenzen) {
+		for (Sequenz seq : sequenzen) {
 			System.out.println("For");
-			if (seq.GetId().equals(toDos[1])) {
+			if (seq.getName().equals(toDos[1])) {
 				System.out.println("If");
-				seq.run();
+				seq.play();
 				System.out.println("Launched");
 				synchronized (_sendData) {
 					_sendData.add("212:" + toDos[1]);
@@ -475,28 +506,6 @@ public class NetwProcess extends Thread {
 		} else {
 			// System.out.println("No Sequence active");
 		}
-	}
-
-	private void sequenceEnd() {
-		if (SeqInputAct == true) {
-			SeqInputAct = false;
-			synchronized (_sendData) {
-				_sendData.add("203:" + NewSeqName);
-				System.out.println("203: Ended sequence input");
-			}
-			sequenzen.add(new Sequence(SeqCmds, NewSeqName));
-			SeqCmds = null;
-		} else {
-			synchronized (_sendData) {
-				_sendData.add("103:");
-				_sendData.add("321:");
-				System.out.println("103, 321: No Sequence active");
-			}
-		}
-	}
-
-	private void createSequence(String commText) {
-		SeqCmds.add(commText);
 	}
 
 	private void delete(String objName) {
