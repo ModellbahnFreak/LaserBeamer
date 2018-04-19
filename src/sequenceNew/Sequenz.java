@@ -3,18 +3,16 @@ package sequenceNew;
 import java.util.ArrayList;
 
 import javafx.scene.Node;
-import sequence.Cue;
 import sequence.DeleteHandler;
 import sequence.NodeCreator;
 import server.Gui;
 
 public class Sequenz {
-	int length = 10;
+	transient int length = 10;
 	private ArrayList<ObjProperties> objEigensch;
 	private int msPerFrame = (int)(1000.0/25.0);
 	//									  Framerate
-	private Thread SeqT = null;
-	private boolean TreadActive = false;
+	private transient Thread SeqT = null;
 	private String seqName = "";
 	
 	private Runnable play = new Runnable() {
@@ -101,7 +99,7 @@ public class Sequenz {
 				}
 			}
 		} catch (NumberFormatException e) {
-			System.out.println("No Number");
+			System.err.println("No Number");
 		}
 	}
 	
@@ -109,7 +107,6 @@ public class Sequenz {
 		try {
 			String objName = "";
 			String propName = "";
-			int frameNo = 0;
 			if (cmdTeil.length >= 3) {
 				objName = cmdTeil[1];
 				propName = cmdTeil[2];
@@ -120,7 +117,7 @@ public class Sequenz {
 				}
 			}
 		} catch (NumberFormatException e) {
-			System.out.println("No Number");
+			System.err.println("No Number");
 		}
 	}
 
@@ -141,7 +138,7 @@ public class Sequenz {
 				}
 			}
 		} catch (NumberFormatException e) {
-			System.out.println("No Number");
+			System.err.println("No Number");
 		}
 	}
 
@@ -167,7 +164,7 @@ public class Sequenz {
 				}
 			}
 		} catch (NumberFormatException e) {
-			System.out.println("No Number");
+			System.err.println("No Number");
 		}
 	}
 
@@ -183,6 +180,13 @@ public class Sequenz {
 			SeqT.interrupt();
 			SeqT = null;
 		}
+	}
+	
+	public boolean isActive() {
+		if (SeqT != null) {
+			return true;
+		}
+		return false;
 	}
 	
 	public String getName() {
@@ -204,5 +208,18 @@ public class Sequenz {
 			elem.add(objekt.getObj());
 		}
 		return elem;
+	}
+	
+	public ArrayList<String> getCmds() {
+		ArrayList<String> cmds = new ArrayList<String>();
+		cmds.add("sequence;" + getName());
+		for (ObjProperties objekt : objEigensch) {
+			cmds.add(NodeCreator.nodeToString(objekt.getObj()));
+		}
+		for (ObjProperties objekt : objEigensch) {
+			cmds.addAll(objekt.getFramesStr());
+		}
+		cmds.add("SeqEnd");
+		return cmds;
 	}
 }

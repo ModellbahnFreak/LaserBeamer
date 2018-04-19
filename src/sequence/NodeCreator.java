@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,6 +20,7 @@ import javafx.util.Duration;
 import server.Gui;
 
 public class NodeCreator {
+	
 	public static boolean validateCmd(String cmd) {
 		String[] ToDos = cmd.split(";");
 		switch (ToDos[0]) {
@@ -75,6 +77,7 @@ public class NodeCreator {
 					kreis.setRadius(Double.parseDouble(toDos[4]));
 				}
 				kreis.setFill(Color.web(toDos[5]));
+				kreis.setStroke(Color.WHITE);
 				kreis.setStrokeWidth(0);
 			}
 			if (toDos.length >= 8) {
@@ -106,6 +109,7 @@ public class NodeCreator {
 					rect.setHeight(Double.parseDouble(toDos[5]));
 				}
 				rect.setFill(Color.web(toDos[6]));
+				rect.setStroke(Color.WHITE);
 				rect.setStrokeWidth(0);
 			}
 			if (toDos.length >= 9) {
@@ -161,6 +165,7 @@ public class NodeCreator {
 				mediaView = new MediaView(player);
 				String VidUrl = toDos[1];
 				mediaView.setId(VidUrl);
+				mediaView.getProperties().put("path", datei.toString());
 				String mode = "";
 				if (toDos.length == 3) {
 					mediaView.setX(0);
@@ -190,37 +195,52 @@ public class NodeCreator {
 				} else {
 					return null;
 				}
+				
+				mediaView.getProperties().put("mode", mode);
+				
+				Runnable loopMode = new Runnable() {
+					@Override
+					public void run() {
+						player.seek(Duration.ZERO);
+					}
+				};
+				Runnable singleMode = new Runnable() {
+					@Override
+					public void run() {
+					}
+				};
+				Runnable onceMode = new Runnable() {
+					@Override
+					public void run() {
+						voidDel.deleteElem(VidUrl);
+					}
+				};
+				Runnable autoloopMode = new Runnable() {
+					@Override
+					public void run() {
+						player.seek(Duration.ZERO);
+					}
+				};
+				
 				switch (mode) {
 				case "loop":
-					player.setOnEndOfMedia(new Runnable() {
-						@Override
-						public void run() {
-							player.seek(Duration.ZERO);
-						}
-					});
+					player.setOnEndOfMedia(loopMode);
 					break;
 				case "once":
-					player.setOnEndOfMedia(new Runnable() {
-						@Override
-						public void run() {
-							voidDel.deleteElem(VidUrl);
-						}
-					});
+					player.setOnEndOfMedia(onceMode);
 					break;
 				case "single":
-
+					player.setOnEndOfMedia(singleMode);
+					break;
+				case "autoloop":
+					player.setOnEndOfMedia(autoloopMode);
+					player.play();
 					break;
 				default:
-					player.setOnEndOfMedia(new Runnable() {
-						@Override
-						public void run() {
-							// voidDel.delete(mediaView.getId());
-							voidDel.deleteElem(VidUrl);
-						}
-					});
+					player.setOnEndOfMedia(onceMode);
 					break;
 				}
-				player.play();
+				//player.play();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
@@ -271,6 +291,7 @@ public class NodeCreator {
 				}
 				BildView.setImage(Bild);
 				BildView.setId(toDos[1]);
+				BildView.getProperties().put("path", datei.toString());
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -301,5 +322,34 @@ public class NodeCreator {
 		} catch (NumberFormatException e) {
 			return null;
 		}
+	}
+	
+	public static String nodeToString (Node objekt) {
+		String erg = "";
+		if (objekt instanceof ImageView) {
+			erg = "img;" + objekt.getId() + ";" + objekt.getProperties().get("path").toString() + ";" + ((ImageView)objekt).getX() + ";" + ((ImageView)objekt).getY() + ";" + ((ImageView)objekt).getFitWidth() + ";" + ((ImageView)objekt).getFitHeight();
+		} else if (objekt instanceof MediaView) {
+			erg = "vid;" + objekt.getId() + ";" + objekt.getProperties().get("path").toString() + ";" + objekt.getProperties().get("mode") + ";" + ((MediaView)objekt).getX() + ";" + ((MediaView)objekt).getY() + ";" + ((MediaView)objekt).getFitWidth() + ";" + ((MediaView)objekt).getFitHeight();
+		} else if (objekt instanceof Text) {
+			erg = "txt;" + objekt.getId() + ";" + ((Text)objekt).getX() + ";" + ((Text)objekt).getY() + ";'" + ((Text)objekt).getText() + "';" + ((Text)objekt).getFill().toString();
+		} else if (objekt instanceof Line) {
+			erg = "line;" + objekt.getId() + ";" + ((Line)objekt).getStartX() + ";" + ((Line)objekt).getStartY() + ";" + ((Line)objekt).getEndX() + ";" + ((Line)objekt).getEndY() + ";" + ((Line)objekt).getStroke().toString() + ";" + ((Line)objekt).getStrokeWidth();
+		} else if (objekt instanceof Rectangle) {
+			String id = objekt.getId();
+			String xpos = String.valueOf(((Rectangle)objekt).getX());
+			String ypos = String.valueOf(((Rectangle)objekt).getY());
+			String w = String.valueOf(((Rectangle)objekt).getWidth());
+			String h = String.valueOf(((Rectangle)objekt).getHeight());
+			String color = String.valueOf(((Rectangle)objekt).getFill());
+			String ArcW = String.valueOf(((Rectangle)objekt).getArcWidth());
+			String ArcH = String.valueOf(((Rectangle)objekt).getArcHeight());
+			String StrokeC = String.valueOf(((Rectangle)objekt).getStroke());
+			String StrokeW = String.valueOf(((Rectangle)objekt).getStrokeWidth());
+			erg = "rect;" + id + ";" + xpos + ";" + ypos + ";" + w + ";" + h + ";" + color + ";" + ArcW + ";" + ArcH + ";" + StrokeC + ";" + StrokeW;
+			//erg = "rect;" + objekt.getId() + ";" + ((Rectangle)objekt).getX() + ";" + ((Rectangle)objekt).getY() + ";" + ((Rectangle)objekt).getWidth() + ";" + ((Rectangle)objekt).getHeight() + ";" + ((Rectangle)objekt).getFill().toString() + ";" + ((Rectangle)objekt).getArcWidth() + ";" + ((Rectangle)objekt).getArcHeight() + ";" + ((Rectangle)objekt).getStroke().toString() + ";" + ((Rectangle)objekt).getStrokeWidth();
+		} else if (objekt instanceof Circle) {
+			erg = "circle;" + objekt.getId() + ";" + ((Circle)objekt).getCenterX() + ";" + ((Circle)objekt).getCenterY() + ";" + ((Circle)objekt).getRadius() + ";" + ((Circle)objekt).getFill().toString() + ";" + ((Circle)objekt).getStroke().toString() + ";" + ((Circle)objekt).getStrokeWidth();
+		}
+		return erg;
 	}
 }

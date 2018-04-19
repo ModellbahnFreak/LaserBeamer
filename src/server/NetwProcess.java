@@ -1,22 +1,21 @@
 package server;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Queue;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaView;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import sequence.DeleteHandler;
 import sequence.NodeCreator;
-import sequence.Sequence;
 import sequenceNew.Sequenz;
 
 public class NetwProcess extends Thread {
@@ -27,8 +26,8 @@ public class NetwProcess extends Thread {
 	private boolean SeqInputAct = false;
 	private ArrayList<String> SeqCmds = null;
 	private String NewSeqName = "";
-	private Node BlackoutObj;
-	private int _blackoutState = 0; // 0: nicht erstellt, 1: erstellt aber nicht hinzugefügt, 2: erstellt
+	//private Node BlackoutObj;
+	//private int _blackoutState = 0; // 0: nicht erstellt, 1: erstellt aber nicht hinzugefügt, 2: erstellt
 									// hinzugefügt unsichtbar, 3: black aktiv
 
 	private final DeleteHandler DeleteCallback = new DeleteHandler() {
@@ -98,10 +97,15 @@ public class NetwProcess extends Thread {
 				case "system":
 					editPreferences(ToDos);
 					break;
+				case "player":
+					togglePlayer(ToDos);
+				case "saveSeq":
+					saveSequence(ToDos);
 				default:
 					/*if (SeqInputAct == true) {
 						createSequence(commText);
 					} else {*/
+					try {
 						Node nodeNeu = NodeCreator.cmdToNode(commText, DeleteCallback);
 						if (nodeNeu != null) {
 							synchronized (_sendData) {
@@ -110,11 +114,63 @@ public class NetwProcess extends Thread {
 							}
 							elem.add(nodeNeu);
 							Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(nodeNeu)));
+							System.out.println("Command created: " + NodeCreator.nodeToString(nodeNeu));
 						}
-					//}
+					} catch (Exception e) {
+						System.err.println("Fehler beim Erstellen des GUI Objekts");
+						e.printStackTrace();
+					}
 					break;
 				}
 				// Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(mediaView)));
+			}
+		}
+	}
+
+	private void saveSequence(String[] toDos) {
+		if (toDos.length == 3) {
+			for (Sequenz seq : sequenzen) {
+				if (seq.getName().equals(toDos[1])) {
+					try {
+						/*ObjectOutputStream seqOut = new ObjectOutputStream(new FileOutputStream(toDos[2]));
+						seqOut.writeObject(seq);
+						seqOut.flush();
+						seqOut.close();*/
+						PrintWriter writeSeq = new PrintWriter(toDos[2], "UTF-8");
+						for(String cmd : seq.getCmds()) {
+							writeSeq.println(cmd);
+						}
+						writeSeq.flush();
+						writeSeq.close();
+					} catch (IOException e) {
+						System.err.println("Fehler beim speichern der Sequence");
+						e.printStackTrace();
+					} catch (Exception e) {
+						System.err.println("Fehler beim serialisieren der Sequence");
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private void togglePlayer(String[] toDos) {
+		if (toDos.length == 3) {
+			for (Node obj : elem) {
+				if (obj.getId().equals(toDos[1]) && obj instanceof MediaView) {
+					switch (toDos[2]) {
+					case "play":
+						((MediaView)obj).getMediaPlayer().play();
+						break;
+					case "pause":
+						((MediaView)obj).getMediaPlayer().pause();
+						break;
+					case "stop":
+						((MediaView)obj).getMediaPlayer().stop();
+						break;
+					}
+				}
+				
 			}
 		}
 	}
@@ -139,7 +195,7 @@ public class NetwProcess extends Thread {
 		} catch (NumberFormatException e) {
 			synchronized (_sendData) {
 				_sendData.add("102:");
-				System.out.println("102: Wrong number format");
+				System.err.println("102: Wrong number format");
 			}
 		}
 	}
@@ -164,7 +220,7 @@ public class NetwProcess extends Thread {
 		} catch (NumberFormatException e) {
 			synchronized (_sendData) {
 				_sendData.add("102:");
-				System.out.println("102: Wrong number format");
+				System.err.println("102: Wrong number format");
 			}
 		}
 	}
@@ -191,7 +247,7 @@ public class NetwProcess extends Thread {
 		} catch (NumberFormatException e) {
 			synchronized (_sendData) {
 				_sendData.add("102:");
-				System.out.println("102: Wrong number format");
+				System.err.println("102: Wrong number format");
 			}
 		}
 	}
@@ -218,7 +274,7 @@ public class NetwProcess extends Thread {
 		} catch (NumberFormatException e) {
 			synchronized (_sendData) {
 				_sendData.add("102:");
-				System.out.println("102: Wrong number format");
+				System.err.println("102: Wrong number format");
 			}
 		}
 	}
@@ -273,7 +329,7 @@ public class NetwProcess extends Thread {
 			double Helligk = Double.parseDouble(status);
 			Gui.INSTANCE.root.setOpacity(Helligk);
 		} catch (Exception e) {
-			System.out.println("Keine Zahl");
+			System.err.println("Keine Zahl");
 			Gui.INSTANCE.root.setOpacity(1);
 		}
 	}

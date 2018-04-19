@@ -106,4 +106,16 @@ public class Property {
 	public void playFrame(int frame) {
 		property.setVal(values.get(frame).value);
 	}
+
+	public ArrayList<String> getFrames(String objName) {
+		ArrayList<String> framesStr = new ArrayList<String>();
+		String propName = getName();
+		for (int i = 0; i < values.size(); i++) {
+			Frame bild = values.get(i);
+			if (bild.isKeyframe) {
+				framesStr.add("frame;" + objName + ";" + propName + ";" + i + ";" + String.valueOf(bild.value) + ";" + String.valueOf(bild.interpolMode));
+			}
+		}
+		return framesStr;
+	}
 }

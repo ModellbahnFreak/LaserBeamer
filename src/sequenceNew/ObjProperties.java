@@ -1,5 +1,7 @@
 package sequenceNew;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javafx.scene.Node;
@@ -10,10 +12,11 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import sequence.NodeCreator;
 
 public class ObjProperties {
 	private ArrayList<Property> eigensch;
-	private Node obj = null;
+	private transient Node obj = null;
 	
 	public ObjProperties (ArrayList<Property> _eigensch, Node _obj) {
 		eigensch = _eigensch;
@@ -337,6 +340,25 @@ public class ObjProperties {
 					return "opacity";
 				}
 			};
+		case "play":
+			return new ValueSet() {
+				@Override
+				public void setVal(double value) {
+					if (value == 0) {
+						
+					} else if (Math.round(value) == 1) {
+						((MediaView)obj).getMediaPlayer().play();
+					} else if (Math.round(value) == 2) {
+						((MediaView)obj).getMediaPlayer().stop();
+					}  else if (Math.round(value) == 3) {
+						((MediaView)obj).getMediaPlayer().pause();
+					}
+				}
+				@Override
+				public String getName() {
+					return "play";
+				}
+			};
 		}
 		return null;
 	}
@@ -478,5 +500,19 @@ public class ObjProperties {
 		for (Property eig : eigensch) {
 			eig.playFrame(frame);
 		}
+	}
+	
+	private void writeObject(final ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		out.writeChars(NodeCreator.nodeToString(obj));
+	}
+
+	public ArrayList<String> getFramesStr() {
+		ArrayList<String> strFrames = new ArrayList<String>();
+		String objName = getName();
+		for (Property eig : eigensch) {
+			strFrames.addAll(eig.getFrames(objName));
+		}
+		return strFrames;
 	}
 }
