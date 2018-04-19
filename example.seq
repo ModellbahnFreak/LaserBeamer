@@ -1,0 +1,16 @@
+sequence;neu
+line;linie;100.0;30.0;750.0;750.0;0xffffffff;1.0
+rect;rec;150.0;150.0;50.0;100.0;0xffffffff;0.0;0.0;0xffffffff;0.0
+frame;linie;xPos;0;0.0;1
+frame;linie;xPos;100;100.0;1
+frame;linie;yPos;0;0.0;1
+frame;linie;yPos;50;500.0;1
+frame;linie;yPos;100;30.0;1
+frame;linie;yEnd;0;100.0;1
+frame;linie;yEnd;100;750.0;1
+frame;linie;xEnd;0;0.0;1
+frame;linie;xEnd;100;750.0;1
+frame;rec;opacity;0;1.0;1
+frame;rec;opacity;50;0.0;1
+frame;rec;opacity;100;1.0;1
+SeqEnd
