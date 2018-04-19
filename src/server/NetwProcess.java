@@ -1,6 +1,8 @@
 package server;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -99,8 +101,16 @@ public class NetwProcess extends Thread {
 					break;
 				case "player":
 					togglePlayer(ToDos);
+					break;
 				case "saveSeq":
 					saveSequence(ToDos);
+					break;
+				case "loadSeq":
+					loadSequence(ToDos);
+					break;
+				case "delSeq":
+					deleteSeq(ToDos[1]);
+					break;
 				default:
 					/*if (SeqInputAct == true) {
 						createSequence(commText);
@@ -131,6 +141,67 @@ public class NetwProcess extends Thread {
 						e.printStackTrace();
 					}
 				}
+			}
+		}
+	}
+
+	private void deleteSeq(String objName) {
+		System.out.println(objName);
+		if ("all".equals(objName)) {
+			sequenzen.clear();
+			synchronized (_sendData) {
+				_sendData.add("321:");
+				System.out.println("Deleted all");
+			}
+		} else {
+			ArrayList<Sequenz> delSeq = new ArrayList<Sequenz>();
+			for (Sequenz seq : sequenzen) {
+				if (seq.getName().equals(objName)) {
+					delSeq.add(seq);
+					synchronized (_sendData) {
+						_sendData.add("322:" + objName);
+						System.out.println("322: Deleted " + objName);
+					}
+				}
+			}
+			for (Sequenz del : delSeq) {
+				sequenzen.remove(del);
+			}
+		}
+	}
+
+	private void loadSequence(String[] toDos) {
+		if (toDos.length == 2) {
+			try {
+				if (new File(toDos[1]).exists()) {
+					BufferedReader readSeq = new BufferedReader(new FileReader(toDos[1]));
+					String zeile = null;
+					ArrayList<String> cmds = new ArrayList<String>();
+					zeile = readSeq.readLine();
+					if (zeile != null && zeile.startsWith("sequence;")) {
+						String seqName = zeile.split(";")[1];
+						while ((zeile = readSeq.readLine()) != null) {
+							if ("SeqEnd".equals(zeile)) {
+								
+							} else {
+								cmds.add(zeile);
+							}
+						}
+						readSeq.close();
+						sequenzen.add(new Sequenz(cmds, seqName));
+					} else {
+						System.err.println("Startet nicht mit 'sequence'");
+						readSeq.close();
+					}
+				} else {
+					System.err.println("Datei nicht vorhanden");
+				}
+			} catch (IOException e) {
+				System.err.println("Fehler beim lesen der Sequence");
+				e.printStackTrace();
+			} catch (Exception e) {
+				System.err.println("Fehler beim deserialisieren der Sequence");
+				e.printStackTrace();
 			}
 		}
 	}
@@ -579,7 +650,6 @@ public class NetwProcess extends Thread {
 				Gui.INSTANCE.delNodeList.add(obj);
 			}
 			elem.clear();
-			sequenzen.clear();
 			synchronized (_sendData) {
 				_sendData.add("321:");
 				System.out.println("Deleted all");
@@ -598,19 +668,6 @@ public class NetwProcess extends Thread {
 			}
 			for (Node obj : delNum) {
 				elem.remove(obj);
-			}
-			ArrayList<Sequenz> delSeq = new ArrayList<Sequenz>();
-			for (Sequenz seq : sequenzen) {
-				if (seq.getName().equals(objName)) {
-					delSeq.add(seq);
-					synchronized (_sendData) {
-						_sendData.add("322:" + objName);
-						System.out.println("322: Deleted " + objName);
-					}
-				}
-			}
-			for (Sequenz del : delSeq) {
-				sequenzen.remove(del);
 			}
 		}
 	}

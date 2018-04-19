@@ -1,18 +1,15 @@
 package server;
 
-import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.media.*;
 import javafx.scene.paint.*;
@@ -26,7 +23,7 @@ public class Gui extends Application implements Runnable {
 	public ArrayList<Node> addNodeList = new ArrayList<Node>();
 	public ArrayList<Node> delNodeList = new ArrayList<Node>();
 
-	private final int snapshotRate = 1;// Snapshots per second
+	//private final int snapshotRate = 1;// Snapshots per second
 
 	@Override
 	public void init() {

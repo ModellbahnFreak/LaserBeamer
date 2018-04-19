@@ -1,12 +1,8 @@
 package server;
 
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
-import java.nio.ByteBuffer;
 import java.util.Queue;
-
-import javax.imageio.ImageIO;
 
 public class Network implements Runnable {
 	private final Queue<String> _recvData;
