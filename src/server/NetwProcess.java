@@ -46,8 +46,8 @@ public class NetwProcess extends Thread {
 	@Override
 	public void run() {
 		System.out.println("Verarb waret");
+		String commText = null;
 		while (!Thread.currentThread().isInterrupted()) {
-			String commText = null;
 			synchronized (_recvData) {
 				commText = _recvData.poll();
 			}
@@ -123,6 +123,14 @@ public class NetwProcess extends Thread {
 					break;
 				}
 				// Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(mediaView)));
+			} else {
+				synchronized (_recvData) {
+					try {
+						_recvData.wait(10000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
@@ -590,6 +598,19 @@ public class NetwProcess extends Thread {
 			}
 			for (Node obj : delNum) {
 				elem.remove(obj);
+			}
+			ArrayList<Sequenz> delSeq = new ArrayList<Sequenz>();
+			for (Sequenz seq : sequenzen) {
+				if (seq.getName().equals(objName)) {
+					delSeq.add(seq);
+					synchronized (_sendData) {
+						_sendData.add("322:" + objName);
+						System.out.println("322: Deleted " + objName);
+					}
+				}
+			}
+			for (Sequenz del : delSeq) {
+				sequenzen.remove(del);
 			}
 		}
 	}

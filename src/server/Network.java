@@ -37,7 +37,11 @@ public class Network implements Runnable {
 					recvT.start();
 					System.out.println("Daemons started - Working");
 					while (sendT.getState()!=Thread.State.TERMINATED && recvT.getState()!=Thread.State.TERMINATED && !Thread.currentThread().isInterrupted()) {
-						
+						try {
+							Thread.sleep(40);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 					sendT.interrupt();
 					recvT.interrupt();
@@ -126,6 +130,7 @@ public class Network implements Runnable {
 						System.out.println("Received cmd: " + s);
 						synchronized (_recvData) {
 							_recvData.add(s);
+							_recvData.notifyAll();
 						}
 					}
 				}
@@ -150,6 +155,7 @@ public class Network implements Runnable {
 			}
 			synchronized (_recvData) {
 				_recvData.add("connection;close");
+				_recvData.notifyAll();
 			}
 			return true;
 		} catch (IOException e) {
