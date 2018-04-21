@@ -4,10 +4,16 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.CacheHint;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 import server.Gui;
 import server.Server;
 
@@ -18,6 +24,8 @@ public class ArtNetProcess implements Runnable {
 	byte[] datenAlt = null;
 	byte[] kanaele = null;
 	ImageView gobo = null;
+	MediaView goboVid = null;
+	boolean isVideo = false;
 	
 	public ArtNetProcess(byte[] recvDmx) {
 		daten = recvDmx;
@@ -30,7 +38,7 @@ public class ArtNetProcess implements Runnable {
 	public void run() {
 		while (Gui.INSTANCE == null) {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -40,14 +48,35 @@ public class ArtNetProcess implements Runnable {
 		gobo.setCache(true);
 		gobo.setCacheHint(CacheHint.SPEED);
 		gobo.setId("DMXGobo");
-		/*try {
-			gobo.setImage(new Image(new File (Server.einst.getHomeDir() + "1.png").toURI().toURL().toString()));
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		
+		goboVid = new MediaView();
+		goboVid.setCache(true);
+		goboVid.setCacheHint(CacheHint.SPEED);
+		goboVid.setId("DMXGoboVideo");
+		goboVid.opacityProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				try {
+					if (newValue.doubleValue() <= 0) {
+						goboVid.getMediaPlayer().pause();
+					} else {
+						goboVid.getMediaPlayer().play();
+					}
+				} catch (Exception e) {
+					
+				}
+			}
+		});
+		
+		if (isVideo) {
+			gobo.setOpacity(0);
+			goboVid.setOpacity(1);
+		} else {
+			goboVid.setOpacity(0);
+			gobo.setOpacity(1);
 		}
-		gobo.setFitWidth(500);*/
 		Gui.INSTANCE.addNodeList.add(gobo);
+		Gui.INSTANCE.addNodeList.add(goboVid);
 		while (!Thread.currentThread().isInterrupted()) {
 			synchronized (daten) {
 				try {
@@ -75,40 +104,76 @@ public class ArtNetProcess implements Runnable {
 						
 						break;
 					case 4: //Pattern
-						if (datenAktuell[i] != 0) {
+						//if (datenAktuell[i] != 0) {
 							File bild = new File (Server.einst.getHomeDir() + "/gobos/" + (0xff&datenAktuell[i]) + ".png");
-							System.out.println("Loading " + bild.getAbsolutePath());
 							if (bild.exists()) {
+								System.out.println("Loading " + bild.getAbsolutePath());
 								try {
 									gobo.setImage(new Image(bild.toURI().toURL().toString()));
+									isVideo = false;
 								} catch (MalformedURLException e) {
 									e.printStackTrace();
 								}
+							} else {
+								File film = new File (Server.einst.getHomeDir() + "/gobos/" + (0xff&datenAktuell[i]) + ".mp4");
+								if (film.exists()) {
+									System.out.println("Loading " + film.getAbsolutePath());
+									try {
+										goboVid.setMediaPlayer(new MediaPlayer(new Media(film.toURI().toURL().toString())));
+										goboVid.getMediaPlayer().setOnEndOfMedia(new Runnable() {
+											@Override
+											public void run() {
+												goboVid.getMediaPlayer().seek(Duration.ZERO);
+											}
+										});
+										isVideo = true;
+										goboVid.getMediaPlayer().play();
+									} catch (MalformedURLException e) {
+										e.printStackTrace();
+									}
+								}
 							}
-						} else {
+							if (isVideo) {
+								gobo.setOpacity(0);
+								goboVid.setOpacity(1);
+							} else {
+								goboVid.setOpacity(0);
+								gobo.setOpacity(1);
+							}
+						/*} else {
 							
-						}
+						}*/
 						break;
-					case 5: //Red
+					case 5: //Color
 						
 						break;
-					case 6: //Green
-						
+					case 6: //Size
+						gobo.setScaleX(((0xff&datenAktuell[i])/255.0)*5);
+						gobo.setScaleY(((0xff&datenAktuell[i])/255.0)*5);
+						goboVid.setScaleX(((0xff&datenAktuell[i])/255.0)*5);
+						goboVid.setScaleY(((0xff&datenAktuell[i])/255.0)*5);
 						break;
-					case 7: //Blue
+					case 7: //Multi
 						
 						break;
 					case 8: //xPos
-						gobo.setX(((0xff&datenAktuell[i])/255.0)*Gui.INSTANCE.scene.getWidth());
+						goboVid.setX((((0xff&datenAktuell[i])/255.0)*Gui.INSTANCE.scene.getWidth()));
+						gobo.setX((((0xff&datenAktuell[i])/255.0)*Gui.INSTANCE.scene.getWidth()));
 						break;
 					case 9: //yPos
-						gobo.setY(((0xff&datenAktuell[i])/255.0)*Gui.INSTANCE.scene.getHeight());
+						goboVid.setY((((0xff&datenAktuell[i])/255.0)*Gui.INSTANCE.scene.getHeight()));
+						gobo.setY((((0xff&datenAktuell[i])/255.0)*Gui.INSTANCE.scene.getHeight()));
 						break;
 					case 10: //Dimmer
-						gobo.setOpacity((0xff&datenAktuell[i])/255.0);
+						if (isVideo) {
+							goboVid.setOpacity((0xff&datenAktuell[i])/255.0);
+						} else {
+							gobo.setOpacity((0xff&datenAktuell[i])/255.0);
+						}
 						break;
 					case 11: //RotOffset
-						gobo.setRotate(((0xff&datenAktuell[i])/255.0)*360.0);
+						goboVid.setRotate(360-((0xff&datenAktuell[i])/255.0)*360.0);
+						gobo.setRotate(360-((0xff&datenAktuell[i])/255.0)*360.0);
 						break;
 					}
 					datenAlt[i] = datenAktuell[i];

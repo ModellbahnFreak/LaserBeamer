@@ -52,11 +52,11 @@ public class Server {
 				}
 			}
 		}
-		synchronized (recvData) {
+		/*synchronized (recvData) {
 			recvData.add("txt;txt1;100;100;'Hallo Welt';#ffffff");
 			recvData.add("txt;txt2;100;200;'LOL';#FF0000");
 			recvData.notifyAll();
-		}
+		}*/
 	}
 	
 	public static void StartLivestream() {

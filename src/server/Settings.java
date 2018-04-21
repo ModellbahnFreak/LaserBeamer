@@ -104,15 +104,15 @@ public class Settings {
 				tempArr[i] = 4;
 				laenge++;
 				break;
-			case "Red":
+			case "Color":
 				tempArr[i] = 5;
 				laenge++;
 				break;
-			case "Green":
+			case "Size":
 				tempArr[i] = 6;
 				laenge++;
 				break;
-			case "Blue":
+			case "Multi":
 				tempArr[i] = 7;
 				laenge++;
 				break;
