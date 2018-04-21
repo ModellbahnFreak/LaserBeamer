@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<device type="DMXDevice" dmxaddresscount="12" DefaultDisplayStyle="PREVIEW" dmxcversion="3" ddfversion="1.0">
+  <information>
+    <modell>LaserBeamer Software</modell>
+    <vendor>S_L</vendor>
+    <author>Georg Reissner</author>
+    <comment>Software um einen Beamer als Showlaser zu nutzen</comment>
+  </information>
+  <functions>
+    <dimmer dmxchannel="0" />
+    <rawstep dmxchannel="1" name="Function">
+      <step caption="Nichts" mindmx="0" maxdmx="0" />
+      <step caption="Sequences" mindmx="1" maxdmx="1" />
+      <step caption="Video" mindmx="2" maxdmx="2" />
+      <step caption="Bild" mindmx="3" maxdmx="3" />
+    </rawstep>
+    <raw dmxchannel="2" name="Select" />
+    <rawstep dmxchannel="3" name="Play">
+      <step caption="Delete" mindmx="0" maxdmx="0" />
+      <step caption="Play normal" mindmx="255" maxdmx="255" />
+      <step caption="Pause" mindmx="2" maxdmx="2" />
+      <step caption="Stop" mindmx="1" maxdmx="1" />
+    </rawstep>
+    <gobowheel dmxchannel="4">
+      <goboindex dmxchannel="11">
+        <range mindmx="0" maxdmx="255" minval="0" maxval="360" />
+      </goboindex>
+      <step type="open" mindmx="0" maxdmx="0" caption="Gobo0" />
+      <step type="gobo" val="" mindmx="1" maxdmx="1" caption="Gobo1" />
+      <step type="gobo" val="" mindmx="2" maxdmx="2" caption="Gobo2" />
+      <step type="gobo" val="" mindmx="3" maxdmx="3" caption="Gobo3" />
+      <step type="gobo" val="" mindmx="4" maxdmx="4" caption="Gobo4" />
+      <step type="gobo" val="" mindmx="5" maxdmx="5" caption="Gobo5" />
+      <step type="gobo" val="" mindmx="6" maxdmx="6" caption="Gobo6" />
+      <step type="gobo" val="" mindmx="7" maxdmx="7" caption="Gobo7" />
+      <step type="gobo" val="" mindmx="8" maxdmx="8" caption="Gobo8" />
+      <step type="gobo" val="" mindmx="9" maxdmx="9" caption="Gobo9" />
+      <step type="gobo" val="" mindmx="10" maxdmx="10" caption="Gobo10" />
+      <step type="gobo" val="" mindmx="11" maxdmx="11" caption="Gobo11" />
+      <step type="gobo" val="" mindmx="12" maxdmx="12" caption="Gobo12" />
+      <step type="gobo" val="" mindmx="13" maxdmx="13" caption="Gobo13" />
+      <step type="gobo" val="" mindmx="14" maxdmx="14" caption="Gobo14" />
+      <step type="gobo" val="" mindmx="15" maxdmx="15" caption="Gobo15" />
+      <step type="gobo" val="" mindmx="16" maxdmx="16" caption="Gobo16" />
+      <step type="gobo" val="" mindmx="17" maxdmx="17" caption="Gobo17" />
+      <step type="gobo" val="" mindmx="18" maxdmx="18" caption="Gobo18" />
+      <step type="gobo" val="" mindmx="19" maxdmx="19" caption="Gobo19" />
+      <step type="gobo" val="" mindmx="20" maxdmx="20" caption="Gobo20" />
+      <step type="gobo" val="" mindmx="21" maxdmx="21" caption="Gobo21" />
+      <step type="gobo" val="" mindmx="22" maxdmx="22" caption="Gobo22" />
+      <step type="gobo" val="" mindmx="23" maxdmx="23" caption="Gobo23" />
+      <step type="gobo" val="" mindmx="24" maxdmx="24" caption="Gobo24" />
+      <step type="gobo" val="" mindmx="25" maxdmx="25" caption="Gobo25" />
+      <step type="gobo" val="" mindmx="26" maxdmx="26" caption="Gobo26" />
+      <step type="gobo" val="" mindmx="27" maxdmx="27" caption="Gobo27" />
+      <step type="gobo" val="" mindmx="28" maxdmx="28" caption="Gobo28" />
+      <step type="gobo" val="" mindmx="29" maxdmx="29" caption="Gobo29" />
+      <step type="gobo" val="" mindmx="30" maxdmx="30" caption="Gobo30" />
+      <step type="gobo" val="" mindmx="31" maxdmx="31" caption="Gobo31" />
+      <step type="gobo" val="" mindmx="32" maxdmx="32" caption="Gobo32" />
+      <step type="gobo" val="" mindmx="33" maxdmx="33" caption="Gobo33" />
+      <step type="gobo" val="" mindmx="34" maxdmx="34" caption="Gobo34" />
+      <step type="gobo" val="" mindmx="35" maxdmx="35" caption="Gobo35" />
+      <step type="gobo" val="" mindmx="36" maxdmx="36" caption="Gobo36" />
+      <step type="gobo" val="" mindmx="37" maxdmx="37" caption="Gobo37" />
+      <step type="gobo" val="" mindmx="38" maxdmx="38" caption="Gobo38" />
+      <step type="gobo" val="" mindmx="39" maxdmx="39" caption="Gobo39" />
+      <step type="gobo" val="" mindmx="40" maxdmx="40" caption="Gobo40" />
+      <step type="gobo" val="" mindmx="41" maxdmx="41" caption="Gobo41" />
+      <step type="gobo" val="" mindmx="42" maxdmx="42" caption="Gobo42" />
+      <step type="gobo" val="" mindmx="43" maxdmx="43" caption="Gobo43" />
+      <step type="gobo" val="" mindmx="44" maxdmx="44" caption="Gobo44" />
+      <step type="gobo" val="" mindmx="45" maxdmx="45" caption="Gobo45" />
+      <step type="gobo" val="" mindmx="46" maxdmx="46" caption="Gobo46" />
+      <step type="gobo" val="" mindmx="47" maxdmx="47" caption="Gobo47" />
+      <step type="gobo" val="" mindmx="48" maxdmx="48" caption="Gobo48" />
+      <step type="gobo" val="" mindmx="49" maxdmx="49" caption="Gobo49" />
+      <step type="gobo" val="" mindmx="50" maxdmx="50" caption="Gobo50" />
+      <step type="gobo" val="" mindmx="51" maxdmx="51" caption="Gobo51" />
+      <step type="gobo" val="" mindmx="52" maxdmx="52" caption="Gobo52" />
+      <step type="gobo" val="" mindmx="53" maxdmx="53" caption="Gobo53" />
+      <step type="gobo" val="" mindmx="54" maxdmx="54" caption="Gobo54" />
+      <step type="gobo" val="" mindmx="55" maxdmx="55" caption="Gobo55" />
+      <step type="gobo" val="" mindmx="56" maxdmx="56" caption="Gobo56" />
+      <step type="gobo" val="" mindmx="57" maxdmx="57" caption="Gobo57" />
+      <step type="gobo" val="" mindmx="58" maxdmx="58" caption="Gobo58" />
+      <step type="gobo" val="" mindmx="59" maxdmx="59" caption="Gobo59" />
+      <step type="gobo" val="" mindmx="60" maxdmx="60" caption="Gobo60" />
+      <step type="gobo" val="" mindmx="61" maxdmx="61" caption="Gobo61" />
+      <step type="gobo" val="" mindmx="62" maxdmx="62" caption="Gobo62" />
+      <step type="gobo" val="" mindmx="63" maxdmx="63" caption="Gobo63" />
+      <step type="gobo" val="" mindmx="64" maxdmx="64" caption="Gobo64" />
+      <step type="gobo" val="" mindmx="65" maxdmx="65" caption="Gobo65" />
+      <step type="gobo" val="" mindmx="66" maxdmx="66" caption="Gobo66" />
+      <step type="gobo" val="" mindmx="67" maxdmx="67" caption="Gobo67" />
+      <step type="gobo" val="" mindmx="68" maxdmx="68" caption="Gobo68" />
+      <step type="gobo" val="" mindmx="69" maxdmx="69" caption="Gobo69" />
+      <step type="gobo" val="" mindmx="70" maxdmx="70" caption="Gobo70" />
+      <step type="gobo" val="" mindmx="71" maxdmx="71" caption="Gobo71" />
+      <step type="gobo" val="" mindmx="72" maxdmx="72" caption="Gobo72" />
+      <step type="gobo" val="" mindmx="73" maxdmx="73" caption="Gobo73" />
+      <step type="gobo" val="" mindmx="74" maxdmx="74" caption="Gobo74" />
+      <step type="gobo" val="" mindmx="75" maxdmx="75" caption="Gobo75" />
+      <step type="gobo" val="" mindmx="76" maxdmx="76" caption="Gobo76" />
+      <step type="gobo" val="" mindmx="77" maxdmx="77" caption="Gobo77" />
+      <step type="gobo" val="" mindmx="78" maxdmx="78" caption="Gobo78" />
+      <step type="gobo" val="" mindmx="79" maxdmx="79" caption="Gobo79" />
+      <step type="gobo" val="" mindmx="80" maxdmx="80" caption="Gobo80" />
+      <step type="gobo" val="" mindmx="81" maxdmx="81" caption="Gobo81" />
+      <step type="gobo" val="" mindmx="82" maxdmx="82" caption="Gobo82" />
+      <step type="gobo" val="" mindmx="83" maxdmx="83" caption="Gobo83" />
+      <step type="gobo" val="" mindmx="84" maxdmx="84" caption="Gobo84" />
+      <step type="gobo" val="" mindmx="85" maxdmx="85" caption="Gobo85" />
+      <step type="gobo" val="" mindmx="86" maxdmx="86" caption="Gobo86" />
+      <step type="gobo" val="" mindmx="87" maxdmx="87" caption="Gobo87" />
+      <step type="gobo" val="" mindmx="88" maxdmx="88" caption="Gobo88" />
+      <step type="gobo" val="" mindmx="89" maxdmx="89" caption="Gobo89" />
+      <step type="gobo" val="" mindmx="90" maxdmx="90" caption="Gobo90" />
+      <step type="gobo" val="" mindmx="91" maxdmx="91" caption="Gobo91" />
+      <step type="gobo" val="" mindmx="92" maxdmx="92" caption="Gobo92" />
+      <step type="gobo" val="" mindmx="93" maxdmx="93" caption="Gobo93" />
+      <step type="gobo" val="" mindmx="94" maxdmx="94" caption="Gobo94" />
+      <step type="gobo" val="" mindmx="95" maxdmx="95" caption="Gobo95" />
+      <step type="gobo" val="" mindmx="96" maxdmx="96" caption="Gobo96" />
+      <step type="gobo" val="" mindmx="97" maxdmx="97" caption="Gobo97" />
+      <step type="gobo" val="" mindmx="98" maxdmx="98" caption="Gobo98" />
+      <step type="gobo" val="" mindmx="99" maxdmx="99" caption="Gobo99" />
+      <step type="gobo" val="" mindmx="100" maxdmx="100" caption="Gobo100" />
+      <step type="gobo" val="" mindmx="101" maxdmx="101" caption="Gobo101" />
+      <step type="gobo" val="" mindmx="102" maxdmx="102" caption="Gobo102" />
+      <step type="gobo" val="" mindmx="103" maxdmx="103" caption="Gobo103" />
+      <step type="gobo" val="" mindmx="104" maxdmx="104" caption="Gobo104" />
+      <step type="gobo" val="" mindmx="105" maxdmx="105" caption="Gobo105" />
+      <step type="gobo" val="" mindmx="106" maxdmx="106" caption="Gobo106" />
+      <step type="gobo" val="" mindmx="107" maxdmx="107" caption="Gobo107" />
+      <step type="gobo" val="" mindmx="108" maxdmx="108" caption="Gobo108" />
+      <step type="gobo" val="" mindmx="109" maxdmx="109" caption="Gobo109" />
+      <step type="gobo" val="" mindmx="110" maxdmx="110" caption="Gobo110" />
+      <step type="gobo" val="" mindmx="111" maxdmx="111" caption="Gobo111" />
+      <step type="gobo" val="" mindmx="112" maxdmx="112" caption="Gobo112" />
+      <step type="gobo" val="" mindmx="113" maxdmx="113" caption="Gobo113" />
+      <step type="gobo" val="" mindmx="114" maxdmx="114" caption="Gobo114" />
+      <step type="gobo" val="" mindmx="115" maxdmx="115" caption="Gobo115" />
+      <step type="gobo" val="" mindmx="116" maxdmx="116" caption="Gobo116" />
+      <step type="gobo" val="" mindmx="117" maxdmx="117" caption="Gobo117" />
+      <step type="gobo" val="" mindmx="118" maxdmx="118" caption="Gobo118" />
+      <step type="gobo" val="" mindmx="119" maxdmx="119" caption="Gobo119" />
+      <step type="gobo" val="" mindmx="120" maxdmx="120" caption="Gobo120" />
+      <step type="gobo" val="" mindmx="121" maxdmx="121" caption="Gobo121" />
+      <step type="gobo" val="" mindmx="122" maxdmx="122" caption="Gobo122" />
+      <step type="gobo" val="" mindmx="123" maxdmx="123" caption="Gobo123" />
+      <step type="gobo" val="" mindmx="124" maxdmx="124" caption="Gobo124" />
+      <step type="gobo" val="" mindmx="125" maxdmx="125" caption="Gobo125" />
+      <step type="gobo" val="" mindmx="126" maxdmx="126" caption="Gobo126" />
+      <step type="gobo" val="" mindmx="127" maxdmx="127" caption="Gobo127" />
+      <step type="gobo" val="" mindmx="128" maxdmx="128" caption="Gobo128" />
+      <step type="gobo" val="" mindmx="129" maxdmx="129" caption="Gobo129" />
+      <step type="gobo" val="" mindmx="130" maxdmx="130" caption="Gobo130" />
+      <step type="gobo" val="" mindmx="131" maxdmx="131" caption="Gobo131" />
+      <step type="gobo" val="" mindmx="132" maxdmx="132" caption="Gobo132" />
+      <step type="gobo" val="" mindmx="133" maxdmx="133" caption="Gobo133" />
+      <step type="gobo" val="" mindmx="134" maxdmx="134" caption="Gobo134" />
+      <step type="gobo" val="" mindmx="135" maxdmx="135" caption="Gobo135" />
+      <step type="gobo" val="" mindmx="136" maxdmx="136" caption="Gobo136" />
+      <step type="gobo" val="" mindmx="137" maxdmx="137" caption="Gobo137" />
+      <step type="gobo" val="" mindmx="138" maxdmx="138" caption="Gobo138" />
+      <step type="gobo" val="" mindmx="139" maxdmx="139" caption="Gobo139" />
+      <step type="gobo" val="" mindmx="140" maxdmx="140" caption="Gobo140" />
+      <step type="gobo" val="" mindmx="141" maxdmx="141" caption="Gobo141" />
+      <step type="gobo" val="" mindmx="142" maxdmx="142" caption="Gobo142" />
+      <step type="gobo" val="" mindmx="143" maxdmx="143" caption="Gobo143" />
+      <step type="gobo" val="" mindmx="144" maxdmx="144" caption="Gobo144" />
+      <step type="gobo" val="" mindmx="145" maxdmx="145" caption="Gobo145" />
+      <step type="gobo" val="" mindmx="146" maxdmx="146" caption="Gobo146" />
+      <step type="gobo" val="" mindmx="147" maxdmx="147" caption="Gobo147" />
+      <step type="gobo" val="" mindmx="148" maxdmx="148" caption="Gobo148" />
+      <step type="gobo" val="" mindmx="149" maxdmx="149" caption="Gobo149" />
+      <step type="gobo" val="" mindmx="150" maxdmx="150" caption="Gobo150" />
+      <step type="gobo" val="" mindmx="151" maxdmx="151" caption="Gobo151" />
+      <step type="gobo" val="" mindmx="152" maxdmx="152" caption="Gobo152" />
+      <step type="gobo" val="" mindmx="153" maxdmx="153" caption="Gobo153" />
+      <step type="gobo" val="" mindmx="154" maxdmx="154" caption="Gobo154" />
+      <step type="gobo" val="" mindmx="155" maxdmx="155" caption="Gobo155" />
+      <step type="gobo" val="" mindmx="156" maxdmx="156" caption="Gobo156" />
+      <step type="gobo" val="" mindmx="157" maxdmx="157" caption="Gobo157" />
+      <step type="gobo" val="" mindmx="158" maxdmx="158" caption="Gobo158" />
+      <step type="gobo" val="" mindmx="159" maxdmx="159" caption="Gobo159" />
+      <step type="gobo" val="" mindmx="160" maxdmx="160" caption="Gobo160" />
+      <step type="gobo" val="" mindmx="161" maxdmx="161" caption="Gobo161" />
+      <step type="gobo" val="" mindmx="162" maxdmx="162" caption="Gobo162" />
+      <step type="gobo" val="" mindmx="163" maxdmx="163" caption="Gobo163" />
+      <step type="gobo" val="" mindmx="164" maxdmx="164" caption="Gobo164" />
+      <step type="gobo" val="" mindmx="165" maxdmx="165" caption="Gobo165" />
+      <step type="gobo" val="" mindmx="166" maxdmx="166" caption="Gobo166" />
+      <step type="gobo" val="" mindmx="167" maxdmx="167" caption="Gobo167" />
+      <step type="gobo" val="" mindmx="168" maxdmx="168" caption="Gobo168" />
+      <step type="gobo" val="" mindmx="169" maxdmx="169" caption="Gobo169" />
+      <step type="gobo" val="" mindmx="170" maxdmx="170" caption="Gobo170" />
+      <step type="gobo" val="" mindmx="171" maxdmx="171" caption="Gobo171" />
+      <step type="gobo" val="" mindmx="172" maxdmx="172" caption="Gobo172" />
+      <step type="gobo" val="" mindmx="173" maxdmx="173" caption="Gobo173" />
+      <step type="gobo" val="" mindmx="174" maxdmx="174" caption="Gobo174" />
+      <step type="gobo" val="" mindmx="175" maxdmx="175" caption="Gobo175" />
+      <step type="gobo" val="" mindmx="176" maxdmx="176" caption="Gobo176" />
+      <step type="gobo" val="" mindmx="177" maxdmx="177" caption="Gobo177" />
+      <step type="gobo" val="" mindmx="178" maxdmx="178" caption="Gobo178" />
+      <step type="gobo" val="" mindmx="179" maxdmx="179" caption="Gobo179" />
+      <step type="gobo" val="" mindmx="180" maxdmx="180" caption="Gobo180" />
+      <step type="gobo" val="" mindmx="181" maxdmx="181" caption="Gobo181" />
+      <step type="gobo" val="" mindmx="182" maxdmx="182" caption="Gobo182" />
+      <step type="gobo" val="" mindmx="183" maxdmx="183" caption="Gobo183" />
+      <step type="gobo" val="" mindmx="184" maxdmx="184" caption="Gobo184" />
+      <step type="gobo" val="" mindmx="185" maxdmx="185" caption="Gobo185" />
+      <step type="gobo" val="" mindmx="186" maxdmx="186" caption="Gobo186" />
+      <step type="gobo" val="" mindmx="187" maxdmx="187" caption="Gobo187" />
+      <step type="gobo" val="" mindmx="188" maxdmx="188" caption="Gobo188" />
+      <step type="gobo" val="" mindmx="189" maxdmx="189" caption="Gobo189" />
+      <step type="gobo" val="" mindmx="190" maxdmx="190" caption="Gobo190" />
+      <step type="gobo" val="" mindmx="191" maxdmx="191" caption="Gobo191" />
+      <step type="gobo" val="" mindmx="192" maxdmx="192" caption="Gobo192" />
+      <step type="gobo" val="" mindmx="193" maxdmx="193" caption="Gobo193" />
+      <step type="gobo" val="" mindmx="194" maxdmx="194" caption="Gobo194" />
+      <step type="gobo" val="" mindmx="195" maxdmx="195" caption="Gobo195" />
+      <step type="gobo" val="" mindmx="196" maxdmx="196" caption="Gobo196" />
+      <step type="gobo" val="" mindmx="197" maxdmx="197" caption="Gobo197" />
+      <step type="gobo" val="" mindmx="198" maxdmx="198" caption="Gobo198" />
+      <step type="gobo" val="" mindmx="199" maxdmx="199" caption="Gobo199" />
+      <step type="gobo" val="" mindmx="200" maxdmx="200" caption="Gobo200" />
+      <step type="gobo" val="" mindmx="201" maxdmx="201" caption="Gobo201" />
+      <step type="gobo" val="" mindmx="202" maxdmx="202" caption="Gobo202" />
+      <step type="gobo" val="" mindmx="203" maxdmx="203" caption="Gobo203" />
+      <step type="gobo" val="" mindmx="204" maxdmx="204" caption="Gobo204" />
+      <step type="gobo" val="" mindmx="205" maxdmx="205" caption="Gobo205" />
+      <step type="gobo" val="" mindmx="206" maxdmx="206" caption="Gobo206" />
+      <step type="gobo" val="" mindmx="207" maxdmx="207" caption="Gobo207" />
+      <step type="gobo" val="" mindmx="208" maxdmx="208" caption="Gobo208" />
+      <step type="gobo" val="" mindmx="209" maxdmx="209" caption="Gobo209" />
+      <step type="gobo" val="" mindmx="210" maxdmx="210" caption="Gobo210" />
+      <step type="gobo" val="" mindmx="211" maxdmx="211" caption="Gobo211" />
+      <step type="gobo" val="" mindmx="212" maxdmx="212" caption="Gobo212" />
+      <step type="gobo" val="" mindmx="213" maxdmx="213" caption="Gobo213" />
+      <step type="gobo" val="" mindmx="214" maxdmx="214" caption="Gobo214" />
+      <step type="gobo" val="" mindmx="215" maxdmx="215" caption="Gobo215" />
+      <step type="gobo" val="" mindmx="216" maxdmx="216" caption="Gobo216" />
+      <step type="gobo" val="" mindmx="217" maxdmx="217" caption="Gobo217" />
+      <step type="gobo" val="" mindmx="218" maxdmx="218" caption="Gobo218" />
+      <step type="gobo" val="" mindmx="219" maxdmx="219" caption="Gobo219" />
+      <step type="gobo" val="" mindmx="220" maxdmx="220" caption="Gobo220" />
+      <step type="gobo" val="" mindmx="221" maxdmx="221" caption="Gobo221" />
+      <step type="gobo" val="" mindmx="222" maxdmx="222" caption="Gobo222" />
+      <step type="gobo" val="" mindmx="223" maxdmx="223" caption="Gobo223" />
+      <step type="gobo" val="" mindmx="224" maxdmx="224" caption="Gobo224" />
+      <step type="gobo" val="" mindmx="225" maxdmx="225" caption="Gobo225" />
+      <step type="gobo" val="" mindmx="226" maxdmx="226" caption="Gobo226" />
+      <step type="gobo" val="" mindmx="227" maxdmx="227" caption="Gobo227" />
+      <step type="gobo" val="" mindmx="228" maxdmx="228" caption="Gobo228" />
+      <step type="gobo" val="" mindmx="229" maxdmx="229" caption="Gobo229" />
+      <step type="gobo" val="" mindmx="230" maxdmx="230" caption="Gobo230" />
+      <step type="gobo" val="" mindmx="231" maxdmx="231" caption="Gobo231" />
+      <step type="gobo" val="" mindmx="232" maxdmx="232" caption="Gobo232" />
+      <step type="gobo" val="" mindmx="233" maxdmx="233" caption="Gobo233" />
+      <step type="gobo" val="" mindmx="234" maxdmx="234" caption="Gobo234" />
+      <step type="gobo" val="" mindmx="235" maxdmx="235" caption="Gobo235" />
+      <step type="gobo" val="" mindmx="236" maxdmx="236" caption="Gobo236" />
+      <step type="gobo" val="" mindmx="237" maxdmx="237" caption="Gobo237" />
+      <step type="gobo" val="" mindmx="238" maxdmx="238" caption="Gobo238" />
+      <step type="gobo" val="" mindmx="239" maxdmx="239" caption="Gobo239" />
+      <step type="gobo" val="" mindmx="240" maxdmx="240" caption="Gobo240" />
+      <step type="gobo" val="" mindmx="241" maxdmx="241" caption="Gobo241" />
+      <step type="gobo" val="" mindmx="242" maxdmx="242" caption="Gobo242" />
+      <step type="gobo" val="" mindmx="243" maxdmx="243" caption="Gobo243" />
+      <step type="gobo" val="" mindmx="244" maxdmx="244" caption="Gobo244" />
+      <step type="gobo" val="" mindmx="245" maxdmx="245" caption="Gobo245" />
+      <step type="gobo" val="" mindmx="246" maxdmx="246" caption="Gobo246" />
+      <step type="gobo" val="" mindmx="247" maxdmx="247" caption="Gobo247" />
+      <step type="gobo" val="" mindmx="248" maxdmx="248" caption="Gobo248" />
+      <step type="gobo" val="" mindmx="249" maxdmx="249" caption="Gobo249" />
+      <step type="gobo" val="" mindmx="250" maxdmx="250" caption="Gobo250" />
+      <step type="gobo" val="" mindmx="251" maxdmx="251" caption="Gobo251" />
+      <step type="gobo" val="" mindmx="252" maxdmx="252" caption="Gobo252" />
+      <step type="gobo" val="" mindmx="253" maxdmx="253" caption="Gobo253" />
+      <step type="gobo" val="" mindmx="254" maxdmx="254" caption="Gobo254" />
+      <step type="gobo" val="" mindmx="255" maxdmx="255" caption="Gobo255" />
+    </gobowheel>
+    <zoom dmxchannel="6">
+      <range type="linear" mindmx="0" maxdmx="255" minval="0" maxval="5" />
+    </zoom>
+    <prism dmxchannel="7">
+      <step type="open" mindmx="0" maxdmx="0" minval="1" maxval="1" caption="" />
+      <step type="prism" mindmx="1" maxdmx="51" minval="2" maxval="2" caption="" />
+      <step type="prism" mindmx="52" maxdmx="102" minval="3" maxval="3" caption="" />
+      <step type="prism" mindmx="103" maxdmx="153" minval="4" maxval="4" caption="" />
+      <step type="prism" mindmx="154" maxdmx="204" minval="5" maxval="5" caption="" />
+      <step type="prism" mindmx="205" maxdmx="255" minval="6" maxval="6" caption="" />
+    </prism>
+    <position>
+      <pan dmxchannel="8">
+        <range range="100" />
+      </pan>
+      <tilt dmxchannel="9">
+        <range range="100" />
+      </tilt>
+    </position>
+    <raw dmxchannel="10" name="PatternDimmer" />
+  </functions>
+  <procedures />
+</device>
