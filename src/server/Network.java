@@ -97,6 +97,14 @@ public class Network implements Runnable {
 					if (toSend != null) {
 						System.out.println("NotNull");
 						raus.print(toSend + "\r\n");
+					} else {
+						synchronized (_sendData) {
+							try {
+								_sendData.wait(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
 					}
 				}
 			} catch (IOException e) {

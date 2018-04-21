@@ -120,6 +120,7 @@ public class NetwProcess extends Thread {
 						if (nodeNeu != null) {
 							synchronized (_sendData) {
 								_sendData.add("201:" + nodeNeu.getId());
+								_sendData.notifyAll();
 								System.out.println("201: Created " + nodeNeu.getId());
 							}
 							elem.add(nodeNeu);
@@ -151,6 +152,7 @@ public class NetwProcess extends Thread {
 			sequenzen.clear();
 			synchronized (_sendData) {
 				_sendData.add("321:");
+				_sendData.notifyAll();
 				System.out.println("Deleted all");
 			}
 		} else {
@@ -160,6 +162,7 @@ public class NetwProcess extends Thread {
 					delSeq.add(seq);
 					synchronized (_sendData) {
 						_sendData.add("322:" + objName);
+						_sendData.notifyAll();
 						System.out.println("322: Deleted " + objName);
 					}
 				}
@@ -274,6 +277,7 @@ public class NetwProcess extends Thread {
 		} catch (NumberFormatException e) {
 			synchronized (_sendData) {
 				_sendData.add("102:");
+				_sendData.notifyAll();
 				System.err.println("102: Wrong number format");
 			}
 		}
@@ -299,6 +303,7 @@ public class NetwProcess extends Thread {
 		} catch (NumberFormatException e) {
 			synchronized (_sendData) {
 				_sendData.add("102:");
+				_sendData.notifyAll();
 				System.err.println("102: Wrong number format");
 			}
 		}
@@ -326,6 +331,7 @@ public class NetwProcess extends Thread {
 		} catch (NumberFormatException e) {
 			synchronized (_sendData) {
 				_sendData.add("102:");
+				_sendData.notifyAll();
 				System.err.println("102: Wrong number format");
 			}
 		}
@@ -353,6 +359,7 @@ public class NetwProcess extends Thread {
 		} catch (NumberFormatException e) {
 			synchronized (_sendData) {
 				_sendData.add("102:");
+				_sendData.notifyAll();
 				System.err.println("102: Wrong number format");
 			}
 		}
@@ -390,6 +397,7 @@ public class NetwProcess extends Thread {
 			BlackoutObj.setOpacity(1);
 			synchronized (_sendData) {
 				_sendData.add("304:1");
+				_sendData.notifyAll();
 				System.out.println("304: Enabled blackout");
 			}
 			_blackoutState = 3;
@@ -400,6 +408,7 @@ public class NetwProcess extends Thread {
 			// BlackoutObj.toBack();
 			synchronized (_sendData) {
 				_sendData.add("304:0");
+				_sendData.notifyAll();
 				System.out.println("232: Disabled blackout");
 			}
 			_blackoutState = 2;
@@ -421,6 +430,7 @@ public class NetwProcess extends Thread {
 				Server.StartLivestream();
 				synchronized (_sendData) {
 					_sendData.add("231:");
+					_sendData.notifyAll();
 					System.out.println("231: Enabled screenshot");
 				}
 			} else {
@@ -428,6 +438,7 @@ public class NetwProcess extends Thread {
 				Server.StopLivestream();
 				synchronized (_sendData) {
 					_sendData.add("232:");
+					_sendData.notifyAll();
 					System.out.println("232: Disabled screenshot");
 				}
 			}
@@ -440,11 +451,12 @@ public class NetwProcess extends Thread {
 	private void refreshList(String listType) {
 		switch (listType) {
 		case "video":
-			File vidOrdner = new File(Server.homeDirectory + "/content");
+			File vidOrdner = new File(Server.einst.getHomeDir() + "/content");
 			if (vidOrdner.exists()) {
 				ArrayList<File> dateien = new ArrayList<File>(Arrays.asList(vidOrdner.listFiles()));
 				synchronized (_sendData) {
 					_sendData.add("421:");
+					_sendData.notifyAll();
 					System.out.println("421: Video list start");
 					for (File f : dateien) {
 						String endung = getExtension(f.getName()).toLowerCase();
@@ -469,19 +481,22 @@ public class NetwProcess extends Thread {
 							_sendData.add(f.getPath());
 							break;
 						}
+						_sendData.notifyAll();
 					}
 					_sendData.add("422:");
+					_sendData.notifyAll();
 					System.out.println("422: Video list end");
 				}
 			} else {
 				synchronized (_sendData) {
 					_sendData.add("311:");
+					_sendData.notifyAll();
 					System.out.println("311: content folder not found");
 				}
 			}
 			break;
 		case "img":
-			File imgOrdner = new File(Server.homeDirectory + "/content");
+			File imgOrdner = new File(Server.einst.getHomeDir() + "/content");
 			if (imgOrdner.exists()) {
 				ArrayList<File> dateien = new ArrayList<File>(Arrays.asList(imgOrdner.listFiles()));
 				synchronized (_sendData) {
@@ -510,13 +525,16 @@ public class NetwProcess extends Thread {
 							_sendData.add(f.getPath());
 							break;
 						}
+						_sendData.notifyAll();
 					}
 					_sendData.add("424:");
+					_sendData.notifyAll();
 					System.out.println("424: Img list end");
 				}
 			} else {
 				synchronized (_sendData) {
 					_sendData.add("311:");
+					_sendData.notifyAll();
 					System.out.println("311: content folder not found");
 				}
 			}
@@ -524,10 +542,12 @@ public class NetwProcess extends Thread {
 		case "objs":
 			synchronized (_sendData) {
 				_sendData.add("425:");
+				_sendData.notifyAll();
 				System.out.println("311: Obj list start");
 				for (Node obj : elem) {
 					String elemName = "";
-					if (obj instanceof Circle) {
+					elemName = NodeCreator.nodeToString(obj);
+					/*if (obj instanceof Circle) {
 						elemName += "Circle:";
 					} else if (obj instanceof Rectangle) {
 						elemName += "Rectangle:";
@@ -540,10 +560,12 @@ public class NetwProcess extends Thread {
 					} else if (obj instanceof Text) {
 						elemName += "Text:";
 					}
-					elemName += obj.getId();
+					elemName += obj.getId();*/
 					_sendData.add(elemName);
+					_sendData.notifyAll();
 				}
 				_sendData.add("426:");
+				_sendData.notifyAll();
 				System.out.println("426: Obj list end");
 			}
 			break;
@@ -566,6 +588,7 @@ public class NetwProcess extends Thread {
 			SeqInputAct = false;
 			synchronized (_sendData) {
 				_sendData.add("203:" + NewSeqName);
+				_sendData.notifyAll();
 				System.out.println("203: Ended sequence input");
 			}
 			sequenzen.add(new Sequenz(SeqCmds, NewSeqName));
@@ -573,7 +596,9 @@ public class NetwProcess extends Thread {
 		} else {
 			synchronized (_sendData) {
 				_sendData.add("103:");
+				_sendData.notifyAll();
 				_sendData.add("321:");
+				_sendData.notifyAll();
 				System.out.println("103, 321: No Sequence active");
 			}
 		}
@@ -586,6 +611,7 @@ public class NetwProcess extends Thread {
 				NewSeqName = toDos[1];
 				synchronized (_sendData) {
 					_sendData.add("202:End with 'SeqEnd'");
+					_sendData.notifyAll();
 					System.out.println("202: Sequence Input starting");
 				}
 				SeqCmds = new ArrayList<String>();
@@ -604,13 +630,16 @@ public class NetwProcess extends Thread {
 			} else {
 				synchronized (_sendData) {
 					_sendData.add("321:");
+					_sendData.notifyAll();
 					_sendData.add("101:");
+					_sendData.notifyAll();
 					System.out.println("321, 101: No Sequence name given");
 				}
 			}
 		} else {
 			synchronized (_sendData) {
 				_sendData.add("103:");
+				_sendData.notifyAll();
 				System.out.println("103: Sequence Input already active");
 			}
 		}
@@ -626,6 +655,7 @@ public class NetwProcess extends Thread {
 				System.out.println("Launched");
 				synchronized (_sendData) {
 					_sendData.add("212:" + toDos[1]);
+					_sendData.notifyAll();
 					System.out.println("212: Started Sequence " + toDos[1]);
 				}
 			}
@@ -652,6 +682,7 @@ public class NetwProcess extends Thread {
 			elem.clear();
 			synchronized (_sendData) {
 				_sendData.add("321:");
+				_sendData.notifyAll();
 				System.out.println("Deleted all");
 			}
 		} else {
@@ -662,6 +693,7 @@ public class NetwProcess extends Thread {
 					delNum.add(obj);
 					synchronized (_sendData) {
 						_sendData.add("322:" + objName);
+						_sendData.notifyAll();
 						System.out.println("322: Deleted " + objName);
 					}
 				}

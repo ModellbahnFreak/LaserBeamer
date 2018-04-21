@@ -18,7 +18,6 @@ public class ArtNetProcess implements Runnable {
 	byte[] datenAlt = null;
 	byte[] kanaele = null;
 	ImageView gobo = null;
-	ColorAdjust farbe = null;
 	
 	public ArtNetProcess(byte[] recvDmx) {
 		daten = recvDmx;
@@ -38,8 +37,6 @@ public class ArtNetProcess implements Runnable {
 		}
 		System.out.println("ArtNetProcessing started");
 		gobo = new ImageView();
-		farbe = new ColorAdjust();
-		gobo.setEffect(farbe);
 		gobo.setCache(true);
 		gobo.setCacheHint(CacheHint.SPEED);
 		gobo.setId("DMXGobo");
@@ -118,12 +115,12 @@ public class ArtNetProcess implements Runnable {
 				}
 			}
 			//datenAlt = datenAktuell;
-			try {
+			/*try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 		}
 		Gui.INSTANCE.delNodeList.add(gobo);
 	}
