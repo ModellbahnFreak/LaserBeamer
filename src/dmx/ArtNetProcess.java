@@ -3,6 +3,7 @@ package dmx;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.Queue;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -26,12 +27,14 @@ public class ArtNetProcess implements Runnable {
 	ImageView gobo = null;
 	MediaView goboVid = null;
 	boolean isVideo = false;
+	Queue<String> _recvData;
 	
-	public ArtNetProcess(byte[] recvDmx) {
+	public ArtNetProcess(byte[] recvDmx, Queue<String> recvData) {
 		daten = recvDmx;
 		kanaele = Server.einst.getChannels();
 		datenAktuell = new byte[Server.einst.getChannelCount()];
 		datenAlt = new byte[Server.einst.getChannelCount()];
+		_recvData = recvData;
 	}
 
 	@Override
@@ -77,6 +80,9 @@ public class ArtNetProcess implements Runnable {
 		}
 		Gui.INSTANCE.addNodeList.add(gobo);
 		Gui.INSTANCE.addNodeList.add(goboVid);
+		byte Function = -1;
+		byte Select = -1;
+		byte Play = -1;
 		while (!Thread.currentThread().isInterrupted()) {
 			synchronized (daten) {
 				try {
@@ -95,13 +101,13 @@ public class ArtNetProcess implements Runnable {
 							Gui.INSTANCE.root.setOpacity((0xff&datenAktuell[i])/255.0);
 						break;
 					case 1: //Function
-						
+						Function = datenAktuell[i];
 						break;
 					case 2: //Select
-						
+						Select = datenAktuell[i];
 						break;
 					case 3: //Play
-						
+						Play = datenAktuell[i];
 						break;
 					case 4: //Pattern
 						//if (datenAktuell[i] != 0) {
@@ -179,6 +185,7 @@ public class ArtNetProcess implements Runnable {
 					datenAlt[i] = datenAktuell[i];
 				}
 			}
+			processPlayState(0xff&Function, 0xff&Select, 0xff&Play);
 			//datenAlt = datenAktuell;
 			/*try {
 				Thread.sleep(100);
@@ -188,6 +195,45 @@ public class ArtNetProcess implements Runnable {
 			}*/
 		}
 		Gui.INSTANCE.delNodeList.add(gobo);
+	}
+
+	private void processPlayState(int function, int select, int play) {
+		switch (function) {
+		case 1:
+			if (play == 255) {
+				synchronized (_recvData) {
+					_recvData.add("playSeq;" + (0xff&select));
+					_recvData.notifyAll();
+				}
+			}
+			break;
+		case 2:
+			if (play == 255) {
+				synchronized (_recvData) {
+					_recvData.add("vid;dmxVideo;content/" + (0xff&select) + ".mp4;once;0;0");
+					_recvData.notifyAll();
+				}
+			} else if (play == 0) {
+				synchronized (_recvData) {
+					_recvData.add("del;dmxVideo");
+					_recvData.notifyAll();
+				}
+			}
+			break;
+		case 3:
+			if (play == 255) {
+				synchronized (_recvData) {
+					_recvData.add("img;dmxBild;content/" + (0xff&select) + ".png;0;0");
+					_recvData.notifyAll();
+				}
+			} else if (play == 0) {
+				synchronized (_recvData) {
+					_recvData.add("del;dmxBild");
+					_recvData.notifyAll();
+				}
+			}
+			break;
+		}
 	}
 
 }

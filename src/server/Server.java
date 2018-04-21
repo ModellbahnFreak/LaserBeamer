@@ -38,7 +38,7 @@ public class Server {
 		verarb.setName("NetzwerkVerarb");
 		verarb.start();
 		if (einst.getArtNetState()) {
-			ArtNetRecv dmxEmpf = new ArtNetRecv();
+			ArtNetRecv dmxEmpf = new ArtNetRecv(recvData);
 			Thread dmxT = new Thread(dmxEmpf);
 			dmxT.setDaemon(true);
 			dmxT.setName("DmxEmpfang");

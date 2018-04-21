@@ -20,9 +20,9 @@ public class ArtNetRecv implements Runnable {
 	byte[] recvDmx = null;
 	ArtNetProcess verarb = null;
 	
-	public ArtNetRecv() {
+	public ArtNetRecv(Queue<String> recvData) {
 		recvDmx = new byte[Server.einst.getChannelCount()];
-		verarb = new ArtNetProcess(recvDmx);
+		verarb = new ArtNetProcess(recvDmx, recvData);
 	}
 
 	@Override
