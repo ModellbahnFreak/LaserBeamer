@@ -56,7 +56,7 @@ public class Sequenz {
 		};
 		seqName = Id;
 		for (String cmd : cmds) {
-			System.out.println("SeqCreate: " + cmd);
+			//System.out.println("SeqCreate: " + cmd);
 			if (NodeCreator.validateCmd(cmd)) {
 				Node nodeNeu = NodeCreator.cmdToNode(cmd, DeleteCallback);
 				ObjProperties propsNeu = new ObjProperties(nodeNeu); 
