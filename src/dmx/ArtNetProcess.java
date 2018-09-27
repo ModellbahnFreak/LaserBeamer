@@ -83,7 +83,9 @@ public class ArtNetProcess implements Runnable {
 		byte Function = -1;
 		byte Select = -1;
 		byte Play = -1;
+		boolean playChange = false;
 		while (!Thread.currentThread().isInterrupted()) {
+			playChange = false;
 			synchronized (daten) {
 				try {
 					daten.wait(1000);
@@ -102,12 +104,15 @@ public class ArtNetProcess implements Runnable {
 						break;
 					case 1: //Function
 						Function = datenAktuell[i];
+						playChange = true;
 						break;
 					case 2: //Select
 						Select = datenAktuell[i];
+						playChange = true;
 						break;
 					case 3: //Play
 						Play = datenAktuell[i];
+						playChange = true;
 						break;
 					case 4: //Pattern
 						//if (datenAktuell[i] != 0) {
@@ -185,7 +190,9 @@ public class ArtNetProcess implements Runnable {
 					datenAlt[i] = datenAktuell[i];
 				}
 			}
-			processPlayState(0xff&Function, 0xff&Select, 0xff&Play);
+			if (playChange) {
+				processPlayState(0xff&Function, 0xff&Select, 0xff&Play);
+			}
 			//datenAlt = datenAktuell;
 			/*try {
 				Thread.sleep(100);
@@ -200,7 +207,7 @@ public class ArtNetProcess implements Runnable {
 	private void processPlayState(int function, int select, int play) {
 		switch (function) {
 		case 1:
-			if (play == 255) {
+			if (play == 3) {
 				synchronized (_recvData) {
 					_recvData.add("playSeq;" + (0xff&select));
 					_recvData.notifyAll();
@@ -208,25 +215,57 @@ public class ArtNetProcess implements Runnable {
 			}
 			break;
 		case 2:
-			if (play == 255) {
-				synchronized (_recvData) {
-					_recvData.add("vid;dmxVideo;content/" + (0xff&select) + ".mp4;once;0;0");
-					_recvData.notifyAll();
+			if (play == 3) {
+				if (new File("content/" + (0xff&select) + ".mp4").exists()) {
+					synchronized (_recvData) {
+						_recvData.add("vid;dmxVideo;content/" + (0xff&select) + ".mp4;single;0;0");
+						_recvData.notifyAll();
+						_recvData.add("player;dmxVideo;play");
+						_recvData.notifyAll();
+					}
+					System.out.println("Spiele Vid");
+				} else if (new File("content/" + (0xff&select) + ".mp3").exists()) {
+					synchronized (_recvData) {
+						_recvData.add("vid;dmxVideo;content/" + (0xff&select) + ".mp3;single;0;0");
+						_recvData.notifyAll();
+						_recvData.add("player;dmxVideo;play");
+						_recvData.notifyAll();
+					}
+					System.out.println("Spiele Aud");
 				}
-			} else if (play == 0) {
+			} else if (play == 5) {
 				synchronized (_recvData) {
 					_recvData.add("del;dmxVideo");
 					_recvData.notifyAll();
 				}
+				System.out.println("Entf Vid");
+			} else if (play == 1) {
+				synchronized (_recvData) {
+					_recvData.add("player;dmxVideo;stop");
+					_recvData.notifyAll();
+				}
+				System.out.println("Stoppe Vid");
+			} else if (play == 2) {
+				synchronized (_recvData) {
+					_recvData.add("player;dmxVideo;pause");
+					_recvData.notifyAll();
+				}
+				System.out.println("Pause Vid");
+			} else if (play == 4) {
+				synchronized (_recvData) {
+					_recvData.add("player;dmxVideo;play");
+					_recvData.notifyAll();
+				}
+				System.out.println("Spiele Vid erneut");
 			}
 			break;
 		case 3:
-			if (play == 255) {
+			if (play == 3) {
 				synchronized (_recvData) {
 					_recvData.add("img;dmxBild;content/" + (0xff&select) + ".png;0;0");
 					_recvData.notifyAll();
 				}
-			} else if (play == 0) {
+			} else if (play == 5) {
 				synchronized (_recvData) {
 					_recvData.add("del;dmxBild");
 					_recvData.notifyAll();

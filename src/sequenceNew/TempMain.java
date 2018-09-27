@@ -55,6 +55,6 @@ public class TempMain extends Application {
 		for (Node elem : seq.getNodes()) {
 			root.getChildren().add(elem);
 		}
-		seq.play();
+		seq.play(0);
 	}
 }

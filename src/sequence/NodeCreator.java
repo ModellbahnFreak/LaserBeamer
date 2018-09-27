@@ -155,6 +155,7 @@ public class NodeCreator {
 			try {
 				File datei =new File(toDos[2]); 
 				if (!datei.exists()) {
+					System.out.println("Datei existiert nicht!");
 					return null;
 				}
 				pfad = datei.toURI().toURL();
@@ -228,6 +229,11 @@ public class NodeCreator {
 					break;
 				case "once":
 					player.setOnEndOfMedia(onceMode);
+					break;
+				case "autoonce":
+					player.setOnEndOfMedia(onceMode);
+					System.out.println("Playing once");
+					player.play();
 					break;
 				case "single":
 					player.setOnEndOfMedia(singleMode);

@@ -53,95 +53,148 @@ public class NetwProcess extends Thread {
 			synchronized (_recvData) {
 				commText = _recvData.poll();
 			}
-			if (commText != null) {
-				String[] ToDos = commText.split(";");
-				System.out.println("Process cmd: " + commText);
-				switch (ToDos[0]) {
-				/*
-				 * case "img": createImg(ToDos); break; case "vid": createVid(ToDos); break;
-				 * case "txt": showText(ToDos, commText); System.out.println("New Text"); break;
-				 */
-				case "del":
-					delete(ToDos[1]);
-					break;
-				case "sequence":
-					startSeqInput(ToDos);
-					break;
-				case "connection":
-					if ("close".equals(ToDos[1])) {
-						closeConnection();
-					}
-					break;
-				/*case "SeqEnd":
-					sequenceEnd();
-					break;*/
-				case "playSeq":
-					playSequence(ToDos);
-					break;
-				case "xPos":
-					setXPos(ToDos[1], ToDos[2]);
-					break;
-				case "yPos":
-					setYPos(ToDos[1], ToDos[2]);
-					break;
-				case "width":
-					setWidth(ToDos[1], ToDos[2]);
-					break;
-				case "height":
-					setHeight(ToDos[1], ToDos[2]);
-					break;
-				case "blackout":
-					blackout(ToDos[1]);
-					break;
-				case "quit":
-					System.exit(1);
-					break;
-				case "system":
-					editPreferences(ToDos);
-					break;
-				case "player":
-					togglePlayer(ToDos);
-					break;
-				case "saveSeq":
-					saveSequence(ToDos);
-					break;
-				case "loadSeq":
-					loadSequence(ToDos);
-					break;
-				case "delSeq":
-					deleteSeq(ToDos[1]);
-					break;
-				default:
-					/*if (SeqInputAct == true) {
-						createSequence(commText);
-					} else {*/
-					try {
-						Node nodeNeu = NodeCreator.cmdToNode(commText, DeleteCallback);
-						if (nodeNeu != null) {
-							synchronized (_sendData) {
-								_sendData.add("201:" + nodeNeu.getId());
-								_sendData.notifyAll();
-								System.out.println("201: Created " + nodeNeu.getId());
-							}
-							elem.add(nodeNeu);
-							Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(nodeNeu)));
-							System.out.println("Command created: " + NodeCreator.nodeToString(nodeNeu));
+			try {
+				if (commText != null) {
+					String[] ToDos = commText.split(";");
+					System.out.println("Process cmd: " + commText);
+					switch (ToDos[0]) {
+					/*
+					 * case "img": createImg(ToDos); break; case "vid": createVid(ToDos); break;
+					 * case "txt": showText(ToDos, commText); System.out.println("New Text"); break;
+					 */
+					case "del":
+						delete(ToDos[1]);
+						break;
+					case "sequence":
+						startSeqInput(ToDos);
+						break;
+					case "connection":
+						if ("close".equals(ToDos[1])) {
+							closeConnection();
 						}
-					} catch (Exception e) {
-						System.err.println("Fehler beim Erstellen des GUI Objekts");
-						e.printStackTrace();
+						break;
+					/*case "SeqEnd":
+						sequenceEnd();
+						break;*/
+					case "playSeq":
+						playSequence(ToDos);
+						break;
+					case "stopSeq":
+						stopSequence(ToDos);
+						break;
+					case "xPos":
+						setXPos(ToDos[1], ToDos[2]);
+						break;
+					case "yPos":
+						setYPos(ToDos[1], ToDos[2]);
+						break;
+					case "width":
+						setWidth(ToDos[1], ToDos[2]);
+						break;
+					case "height":
+						setHeight(ToDos[1], ToDos[2]);
+						break;
+					case "blackout":
+						blackout(ToDos[1]);
+						break;
+					case "quit":
+						System.exit(1);
+						break;
+					case "system":
+						editPreferences(ToDos);
+						break;
+					case "player":
+						togglePlayer(ToDos);
+						break;
+					case "saveSeq":
+						saveSequence(ToDos);
+						break;
+					case "loadSeq":
+						loadSequence(ToDos);
+						break;
+					case "delSeq":
+						deleteSeq(ToDos[1]);
+						break;
+					case "editSeq":
+						editSeq(ToDos[1]);
+						break;
+					default:
+						/*if (SeqInputAct == true) {
+							createSequence(commText);
+						} else {*/
+						try {
+							Node nodeNeu = NodeCreator.cmdToNode(commText, DeleteCallback);
+							if (nodeNeu != null) {
+								synchronized (_sendData) {
+									_sendData.add("201:" + nodeNeu.getId());
+									_sendData.notifyAll();
+									System.out.println("201: Created " + nodeNeu.getId());
+								}
+								elem.add(nodeNeu);
+								Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(nodeNeu)));
+								System.out.println("Command created: " + NodeCreator.nodeToString(nodeNeu));
+							}
+						} catch (Exception e) {
+							System.err.println("Fehler beim Erstellen des GUI Objekts");
+							e.printStackTrace();
+						}
+						break;
 					}
-					break;
-				}
-				// Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(mediaView)));
-			} else {
-				synchronized (_recvData) {
-					try {
-						_recvData.wait(10000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					// Gui.INSTANCE.addNodeList.add(elem.get(elem.indexOf(mediaView)));
+				} else {
+					synchronized (_recvData) {
+						try {
+							_recvData.wait(10000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void editSeq(String seqName) {
+		Sequenz seqEdit = null;
+		for (Sequenz seq : sequenzen) {
+			if (seq.getName().equals(seqName)) {
+				seqEdit = seq;
+			}
+		}
+		if (seqEdit != null) {
+			synchronized (_sendData) {
+				_sendData.add("202:End with 'SeqEnd'");
+				_sendData.notifyAll();
+				System.out.println("202: Sequence Input starting");
+			}
+			String cmdText = _recvData.poll();
+			while(!"SeqEnd".equals(cmdText) && !"connection;close".equals(cmdText)) {
+				if (cmdText != null) {
+					seqEdit.editSeq(cmdText);
+				} else { 
+					synchronized (_recvData) {
+						try {
+							_recvData.wait(10000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				cmdText = _recvData.poll();
+				System.out.println(cmdText);
+			}
+			if ("SeqEnd".equals(cmdText)) {
+				closeConnection();
+			}
+		} else {
+			synchronized (_sendData) {
+				_sendData.add("321:");
+				_sendData.notifyAll();
+				_sendData.add("101:");
+				_sendData.notifyAll();
+				System.out.println("321, 101: No Sequence name given");
 			}
 		}
 	}
@@ -646,17 +699,42 @@ public class NetwProcess extends Thread {
 	}
 
 	private void playSequence(String[] toDos) {
-		System.out.println("Starting");
+		try {
+			System.out.println("Starting");
+			String seqName = "";
+			int startFrame = 0;
+			if (toDos.length >= 2) {
+				seqName = toDos[1];
+			}
+			if (toDos.length >= 3) {
+				startFrame = Integer.parseInt(toDos[2]);
+			}
+			for (Sequenz seq : sequenzen) {
+				if (seq.getName().equals(seqName)) {
+					seq.play(startFrame);
+					System.out.println("Launched");
+					synchronized (_sendData) {
+						_sendData.add("212:" + toDos[1]);
+						_sendData.notifyAll();
+						System.out.println("212: Started Sequence " + toDos[1]);
+					}
+				}
+			}
+		} catch (NumberFormatException e) {
+			
+		}
+	}
+	
+	private void stopSequence(String[] toDos) {
+		System.out.println("Stopping seq");
 		for (Sequenz seq : sequenzen) {
-			System.out.println("For");
 			if (seq.getName().equals(toDos[1])) {
-				System.out.println("If");
-				seq.play();
-				System.out.println("Launched");
+				seq.stop();
+				System.out.println("Stopped");
 				synchronized (_sendData) {
-					_sendData.add("212:" + toDos[1]);
+					_sendData.add("213:" + toDos[1]);
 					_sendData.notifyAll();
-					System.out.println("212: Started Sequence " + toDos[1]);
+					System.out.println("213: Stopping Sequence " + toDos[1]);
 				}
 			}
 		}

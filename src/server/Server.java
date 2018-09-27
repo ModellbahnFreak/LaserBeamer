@@ -36,6 +36,7 @@ public class Server {
 		netwT.start();
 		NetwProcess verarb = new NetwProcess(recvData, sendData);
 		verarb.setName("NetzwerkVerarb");
+		verarb.setDaemon(true);
 		verarb.start();
 		if (einst.getArtNetState()) {
 			ArtNetRecv dmxEmpf = new ArtNetRecv(recvData);

@@ -14,6 +14,8 @@ public class Sequenz {
 	//									  Framerate
 	private transient Thread SeqT = null;
 	private String seqName = "";
+	private int dmxNum = 0;
+	int frame = 0;
 	
 	private Runnable play = new Runnable() {
 		@Override
@@ -25,7 +27,7 @@ public class Sequenz {
 					length = propLength;
 				}
 			}
-			int frame = 0;
+			System.out.println("Laenge: " + length);
 			System.out.println(System.currentTimeMillis());
 			long lasttime = System.currentTimeMillis();
 			while(!SeqT.isInterrupted() && frame < length) {
@@ -46,44 +48,81 @@ public class Sequenz {
 		}
 	};
 	
+	DeleteHandler DeleteCallback = new DeleteHandler() {
+		@Override
+		public void deleteElem(String objName) {
+			System.out.println("HAHA No deleting here!");
+		}
+	};
+	
 	public Sequenz(ArrayList<String> cmds, String Id) {
 		objEigensch = new ArrayList<ObjProperties>();
-		DeleteHandler DeleteCallback = new DeleteHandler() {
-			@Override
-			public void deleteElem(String objName) {
-				System.out.println("HAHA No deleting here!");
-			}
-		};
 		seqName = Id;
 		for (String cmd : cmds) {
+			parseStrCmd(cmd);
 			//System.out.println("SeqCreate: " + cmd);
-			if (NodeCreator.validateCmd(cmd)) {
-				Node nodeNeu = NodeCreator.cmdToNode(cmd, DeleteCallback);
-				ObjProperties propsNeu = new ObjProperties(nodeNeu); 
-				objEigensch.add(propsNeu);
-			} else {
-				String[] cmdTeil = cmd.split(";");
-				switch(cmdTeil[0]) {
-				case "frame":
-					parseFrame(cmdTeil);
-					break;
-				case "delFrame":
-					parseDel(cmdTeil);
-					break;
-				case "clear":
-					parseClear(cmdTeil);
-					break;
-				case "delProp":
-					parseDelProp(cmdTeil);
-					break;
-				}
-			}
 		}
 		for (ObjProperties objekt : objEigensch) {
 			objekt.updateInperpolate();
 		}
 	}
 	
+	public void editSeq(String cmd) {
+		parseStrCmd(cmd);
+		for (ObjProperties objekt : objEigensch) {
+			objekt.updateInperpolate();
+		}
+	}
+	
+	private void parseStrCmd(String cmd) {
+		if (NodeCreator.validateCmd(cmd)) {
+			Node nodeNeu = NodeCreator.cmdToNode(cmd, DeleteCallback);
+			ObjProperties propsNeu = new ObjProperties(nodeNeu); 
+			objEigensch.add(propsNeu);
+		} else {
+			String[] cmdTeil = cmd.split(";");
+			switch(cmdTeil[0]) {
+			case "frame":
+				parseFrame(cmdTeil);
+				break;
+			case "delFrame":
+				parseDel(cmdTeil);
+				break;
+			case "clear":
+				parseClear(cmdTeil);
+				break;
+			case "delProp":
+				parseDelProp(cmdTeil);
+				break;
+			case "fps":
+				parseFps(cmdTeil);
+				break;
+			case "setDmx":
+				parseDmx(cmdTeil);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	private void parseDmx(String[] cmdTeil) {
+		try {
+			dmxNum = Integer.parseInt(cmdTeil[1]);
+		} catch (NumberFormatException e) {
+			System.err.println("Konnte DMX-Nummer nicht in Zahl umwandeln.");
+		}
+	}
+
+	private void parseFps(String[] cmdTeil) {
+		try {
+			msPerFrame = (int) (1000.0/Double.parseDouble(cmdTeil[1]));
+			System.out.println("Neue msPerFrame: " + msPerFrame);
+		} catch (NumberFormatException e) {
+			System.err.println("KEine gültige FPS-Zahl");
+		}
+	}
+
 	private void parseDelProp(String[] cmdTeil) {
 		try {
 			String objName = "";
@@ -154,7 +193,8 @@ public class Sequenz {
 				propName = cmdTeil[2];
 				frameNo = Integer.parseInt(cmdTeil[3]);
 				wert = Double.parseDouble(cmdTeil[4]);
-			} else if (cmdTeil.length >= 6) {
+			}
+			if (cmdTeil.length >= 6) {
 				interpolMode = Integer.parseInt(cmdTeil[5]);
 			}
 			for (ObjProperties objekt : objEigensch) {
@@ -168,7 +208,8 @@ public class Sequenz {
 		}
 	}
 
-	public void play() {
+	public void play(int FrameNo) {
+		frame = FrameNo;
 		SeqT = new Thread(play);
 		SeqT.setDaemon(true);
 		SeqT.setName("SequenzThread");
@@ -178,6 +219,13 @@ public class Sequenz {
 	public void stop() {
 		if (SeqT != null) {
 			SeqT.interrupt();
+			while (SeqT.isAlive()) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			SeqT = null;
 		}
 	}
