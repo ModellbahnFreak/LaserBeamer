@@ -51,6 +51,23 @@ public class HttpListener implements Runnable {
 			}
 			return false;
 		}
+
+		@Override
+		public String popRecvBlocking() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	};
+	
+	private final ProcessCallback procCallb = new ProcessCallback() {
+
+		@Override
+		public void sendAll(String cmd) {
+			for (SocketHandler s : openWs) {
+				s.sendRecv.send(cmd);
+			}
+		}
+		
 	};
 
 	public HttpListener(int port) {
@@ -96,7 +113,7 @@ public class HttpListener implements Runnable {
 		@Override
 		public void startWsHandler(Socket _con, BufferedReader _in, PrintStream _out) {
 			synchronized (openWs) {
-				SocketHandler wsHandle = new SocketHandler(_con, _in, _out);
+				SocketHandler wsHandle = new SocketHandler(_con, _in, _out, procCallb);
 				wsHandle.handle();
 				openWs.add(wsHandle);
 			}

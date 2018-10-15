@@ -7,8 +7,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+
+import javafx.scene.Node;
+import sequenceNew.Sequenz;
+import server.Server;
+import webserver.http.ProcessCallback;
+import webserver.main.SocketProcess;
 
 public class SocketHandler {
 	
@@ -17,15 +24,18 @@ public class SocketHandler {
 	private PrintStream out = null;
 	private Thread recvT = null;
 	private Thread sendT = null;
+	private Thread processT = null;
 	private boolean cancel = false;
 	private boolean finishedClosing = false;
 	private LinkedList<SocketPacket> senden = new LinkedList<SocketPacket>();
 	private LinkedList<String> recvText = new LinkedList<String>();
+	private final ProcessCallback processCallback;
 
-	public SocketHandler(Socket _con, BufferedReader _in, PrintStream _out) {
+	public SocketHandler(Socket _con, BufferedReader _in, PrintStream _out, ProcessCallback procCallb) {
 		con = _con;
 		in = _in;
 		out = _out;
+		processCallback = procCallb;
 	}
 	
 	public final SocketSendReceive sendRecv = new SocketSendReceive() {
@@ -35,6 +45,7 @@ public class SocketHandler {
 			SocketPacket paket = new SocketPacket(text);
 			synchronized (senden) {
 				senden.add(paket);
+				senden.notifyAll();
 			}
 		}
 		
@@ -52,6 +63,22 @@ public class SocketHandler {
 			}
 			return false;
 		}
+
+		@Override
+		public String popRecvBlocking() {
+			synchronized (recvText) {
+				if (recvText.size() > 0) {
+					return recvText.pop();
+				} else {
+					try {
+						recvText.wait(1000);
+					} catch (InterruptedException e) {
+						System.out.println("Warten unterbrochen");
+					}
+				}
+			}
+			return null;
+		}
 	};
 	
 	public void handle() {
@@ -64,6 +91,11 @@ public class SocketHandler {
 			sendT.setDaemon(true);
 			sendT.setName("WebsocketSend-"+con.getInetAddress().getHostAddress());
 			sendT.start();
+			SocketProcess verarb = new SocketProcess(sendRecv, Server.elem, Server.sequenzen, processCallback);
+			processT = new Thread(verarb);
+			processT.setDaemon(true);
+			processT.setName("WebsocketProcess-"+con.getInetAddress().getHostAddress());
+			processT.start();
 			System.out.println("Started Ws handlers");
 		}
 	}
@@ -173,11 +205,13 @@ public class SocketHandler {
 										SocketPacket paket = new SocketPacket("Welt");
 										synchronized (senden) {
 											senden.add(paket);
+											senden.notifyAll();
 										}
 									} else {
 										System.out.println("Text-Data: " + textData);
 										synchronized (recvText) {
 											recvText.add(textData);
+											recvText.notifyAll();
 										}
 									}
 									break;
@@ -194,6 +228,7 @@ public class SocketHandler {
 									SocketPacket paket = new SocketPacket(dataGes, (byte) 0xA);
 									synchronized (senden) {
 										senden.add(paket);
+										senden.notifyAll();
 									}
 									System.out.println("Ping");
 									break;
@@ -207,6 +242,7 @@ public class SocketHandler {
 										SocketPacket paket2 = new SocketPacket(dataGes, (byte) 0x8);
 										synchronized (senden) {
 											senden.add(paket2);
+											senden.notifyAll();
 										}
 										sentClose = true;
 									}
@@ -223,6 +259,7 @@ public class SocketHandler {
 							SocketPacket paket = new SocketPacket(new byte[0], (byte) 0x8);
 							synchronized (senden) {
 								senden.add(paket);
+								senden.notifyAll();
 							}
 							sentClose = true;
 						}
@@ -231,6 +268,7 @@ public class SocketHandler {
 					}
 				}
 				if (sentClose && receivedClose) {
+					processT.interrupt();
 					finishedClosing = true;
 				}
 				//System.out.println("Ending recv thread");
@@ -255,14 +293,14 @@ public class SocketHandler {
 						if (nextPacket != null && nextPacket.isValid()) {
 							writeBytes.write(nextPacket.getWsPacket());
 						} else {
-							synchronized (sendRecv) {
-								sendRecv.wait(1000);
+							synchronized (senden) {
+								senden.wait(5000);
 							}
 						}
 					} catch (NoSuchElementException e) {
-						synchronized (sendRecv) {
+						synchronized (senden) {
 							try {
-								sendRecv.wait(1000);
+								senden.wait(5000);
 							} catch (InterruptedException e1) {
 								e1.printStackTrace();
 							}
@@ -271,17 +309,21 @@ public class SocketHandler {
 						e.printStackTrace();
 					}
 				}
-				synchronized (senden) {
-					while (con.isConnected() && senden.size() > 0) {
-						try {
-							SocketPacket nextPacket = senden.removeFirst();
-							if (nextPacket != null && nextPacket.isValid()) {
-								writeBytes.write(nextPacket.getWsPacket());
+				try {
+					synchronized (senden) {
+						while (con.isConnected() && senden.size() > 0) {
+							try {
+								SocketPacket nextPacket = senden.removeFirst();
+								if (nextPacket != null && nextPacket.isValid()) {
+									writeBytes.write(nextPacket.getWsPacket());
+								}
+							} catch (NoSuchElementException e) {
+								
 							}
-						} catch (NoSuchElementException e) {
-							
 						}
 					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
 				}
 				out.flush();
 				writeBytes.flush();

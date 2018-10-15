@@ -22,7 +22,7 @@ public class HttpRequest implements Runnable {
 
 	private Socket con = null;
 	private boolean finished = false;
-	private SocketCallback wsCallback = null;
+	private final SocketCallback wsCallback;
 
 	public HttpRequest(Socket newCon, SocketCallback wsCallb) {
 		con = newCon;
@@ -74,9 +74,13 @@ public class HttpRequest implements Runnable {
 			}
 			if (response == 0) {
 				String connection = keyVal.get("Connection");
-				if ("Upgrade".equals(connection)) {
+				if (connection == null) {
+					connection = "";
+				}
+				String[] connections = connection.toLowerCase().replace(" ", "").split(",");
+				if (contains(connections, "upgrade")) {
 					if ("websocket".equals(keyVal.get("Upgrade"))) {
-						System.out.println("Websocket connection");
+						//System.out.println("Websocket connection");
 						if ("13".equals(keyVal.get("Sec-WebSocket-Version"))) {
 							responseKeyVal.put("Upgrade", "websocket");
 							responseKeyVal.put("Connection", "Upgrade");
@@ -84,17 +88,22 @@ public class HttpRequest implements Runnable {
 							response = 101;
 							sendResponsePage = false;
 							connectionType = 2;
+							//System.err.println("New WS connection");
 						} else {
 							responseKeyVal.put("Sec-WebSocket-Version", "13");
 							response = 400;
 							sendResponsePage = false;
+							//System.err.println("Wrong Socket version");
 						}
 					}
-				} else if ("keep-alive".equals(connection)) {
+				} else if (contains(connections, "keep-alive")) {
 					//System.out.println("HTTP connection");
 				} else {
-					response = 400;					
+					response = 400;
+					System.err.println("Unknown connection");
 				}
+			} else {
+				//System.err.println("Response not 0");
 			}
 
 			if (response == 0) {
@@ -104,16 +113,16 @@ public class HttpRequest implements Runnable {
 			// System.out.println("Responding");
 			String responseStr = "";
 			if (response == 200) {
-				getPath = "content" + getPath;
+				getPath = "client/content" + getPath;
 				responseStr = "OK";
 			} else if (response >= 400 && response < 500) {
-				getPath = "err/" + response + ".html";
+				getPath = "client/err/" + response + ".html";
 				responseStr = "Bad Request";
 			} else if (response == 101) {
 				responseStr = "Switching Protocols";
 			} else {
 				response = 500;
-				getPath = "err/" + response + ".html";
+				getPath = "client/err/" + response + ".html";
 				responseStr = "Internal Server Error";
 			}
 			String ausg = "HTTP/1.1 " + response + " " + responseStr + "\r\n";
@@ -128,7 +137,7 @@ public class HttpRequest implements Runnable {
 				if (!sendFile.exists()) {
 					System.err.println("404 HTTP-Version " + httpVersion + "." + httpSubversion);
 					response = 404;
-					getPath = "err/" + response + ".html";
+					getPath = "client/err/" + response + ".html";
 					responseStr = "Not Found";
 					ausg = "HTTP/1.1 " + response + " " + responseStr + "\r\n";
 					sendFile = new File(getPath);
@@ -181,6 +190,15 @@ public class HttpRequest implements Runnable {
 
 	public boolean isFinished() {
 		return finished;
+	}
+	
+	public boolean contains(String[] arr, String needle) {
+		for (String s : arr) {
+			if (s.equals(needle)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
