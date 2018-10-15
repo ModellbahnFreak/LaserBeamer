@@ -1,0 +1,44 @@
+Rückmeldungen:
+(-=noch zu implementieren)
+Aufbau:
+Status-Code:Data\r\n
+Status-Codes:
+	1xx: General/Network Problem
+		101: Wrong parameters
+		102: Command not found
+		103: Command (at the moment) not permitted/not fitting
+	2xx: OK
+		201: Created Node
+		202: Starting Sequence input (End with 'SeqEnd')
+		203: Ending Sequence input (Creating Sequence)
+		304: Enabled/Disabled blackout
+		-211: Playing Media
+		212: Playing Sequence
+		213: Stoping Seq
+		221: Deleted all
+		222: Deleted Node
+		-231: Enabled sending screenshot
+		-232: Disabled sending screenshot
+		-233: Enabled Playing notification
+		-234: Disabled Playing notification
+		241: Returning screen ratio
+		242: Returning screen size
+		243: Returning valid obj commands
+	3xx: Gui Problem
+		301: Could not create node
+		-311: File not found
+		321: Sequence creation failed
+	4xx: Events/Screenshot
+		-401: Stage Screenshot start
+		-402: Stage Screenshot end
+		-411: Media started playing
+		-412: Media stopped
+		-413: Sequence started
+		-414: Sequence ended
+		421: Video list start
+		422: Video list end
+		423: Img list start
+		424: Img list end
+		425: Obj list start
+		426: Obj list end
+		

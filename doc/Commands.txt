@@ -1,0 +1,55 @@
+Commands:
+obj: ame des Objekts
+Struktur: cmd;obj;arg0;arg1;arg2;...
+
+Mögliche Cmds:
+txt;obj;X;Y;Text;WebColor
+txtSize;obj;X;Y;Textsize;Font;Text;WebColor
+img;obj;filename
+img;obj;filename;X;Y
+img;obj;filename;X;Y;Width;Height
+del;obj
+vid;obj;filename
+vid;obj;filename;mode
+vid;obj;filename;mode;X;Y
+vid;obj;filename;mode;X;Y;Width;Height
+player;obj;state
+line;obj;xStart;yStart;xEnd;yEnd;Color
+line;obj;xStart;yStart;xEnd;yEnd;Color;Breite
+rect;obj;X;Y;Width;Height;Fill
+rect;obj;X;X;Width;Height;Fill;RoundWidth;RoundHeight
+rect;obj;X;X;Width;Height;Fill;RoundWidth;RoundHeight;BorderColor;BorderWith
+circle;obj;CenterX;CenterY;Radius;Fill
+circle;obj;CenterX;CenterY;Radius;Fill;BorderColor;BorderWidth
+sequence;name
+playSeq;seqName
+stopSeq;seqName
+saveSeq;seqName;filename
+loadSeq;filename
+delSeq;name
+editSeq;name
+quit
+exit
+system;screenshot;[1/0]
+system;refresh;[video/img/objs]
+blackout;[1/0]
+
+Sequence:
+	cue;wait;fadeIn;fadeOut;Active
+	cueEnd
+	opacity;obj;ToOpacity
+	color;obj;ToColor(Web)
+	rotate;obj;ToAngle
+	scale;obj;ToX;ToY
+	move;obj;ToX;ToY
+	
+Sequence Neu:
+	frame;objId;Property;FrameNo;Value;InterpolMode
+	delFrame;objId;Property;FrameNo
+	clear;objId;Property
+	delProp;objId;Property
+	
+Propertys:
+0:Nichts
+1:
+States: play;pause;stop
