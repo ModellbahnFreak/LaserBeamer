@@ -3,17 +3,23 @@ package server;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import dmx.ArtNetRecv;
+import javafx.scene.Node;
+import sequenceNew.Sequenz;
 import server.Gui;
+import webserver.http.HttpListener;
 
 public class Server {
 
 	public static Settings einst = new Settings();
 	//private static ImageStream imgStream = new ImageStream(8083);
 	//public static String homeDirectory = "./";
+	public static ArrayList<Node> elem = new ArrayList<Node>();
+	public static ArrayList<Sequenz> sequenzen = new ArrayList<Sequenz>();
 	
 	public static void main(String[] args) {
 		String settingsFile = "settings.ini";
@@ -29,15 +35,20 @@ public class Server {
 		Thread guiT = new Thread(gui);
 		guiT.setName("GuiLaunch");
 		guiT.start();
-		Network netw = new Network(recvData, sendData, 8082);
+		/*Network netw = new Network(recvData, sendData, 8082);
 		Thread netwT = new Thread(netw);
 		netwT.setName("NetzwerkCheckRecv");
 		netwT.setDaemon(true);
-		netwT.start();
-		NetwProcess verarb = new NetwProcess(recvData, sendData);
+		netwT.start();*/
+		HttpListener listen = new HttpListener(80);
+		Thread listenT = new Thread(listen);
+		listenT.setName("NetzwerkCheckRecv");
+		listenT.setDaemon(true);
+		listenT.start();
+		/*NetwProcess verarb = new NetwProcess(recvData, sendData);
 		verarb.setName("NetzwerkVerarb");
 		verarb.setDaemon(true);
-		verarb.start();
+		verarb.start();*/
 		if (einst.getArtNetState()) {
 			ArtNetRecv dmxEmpf = new ArtNetRecv(recvData);
 			Thread dmxT = new Thread(dmxEmpf);
