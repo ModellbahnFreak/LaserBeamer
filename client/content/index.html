@@ -11,18 +11,18 @@
 <div id="statusContainer">Status: <span id="statusText">Verbindung getrennt</span></div>
 <br>
 <div id="container">
-<button class="tabMenu" id="btnclientSettings">Client Settings</button>
-<button class="tabMenu" id="btnserverSettings">Server Settings</button>
-<button class="tabMenu" id="btndmxControl">DMX Steuerung</button>
-<button class="tabMenu" id="btnliveControl">Live Steuerung</button>
-<button class="tabMenu" id="btnprogramming">Seq. Programmierung</button>
-<div class="content" id="clientSettings">
+<button class="tabMenu offline" id="btnclientSettings">Client Settings</button>
+<button class="tabMenu online" id="btnserverSettings">Server Settings</button>
+<button class="tabMenu online" id="btndmxControl">DMX Steuerung</button>
+<button class="tabMenu online" id="btnliveControl">Live Steuerung</button>
+<button class="tabMenu online" id="btnprogramming">Seq. Programmierung</button>
+<div class="content offline" id="clientSettings">
 <span class="sectionHead">Client Settings</span><br><br>
 <button id="connect">Verbinden</button><br>
 Debug-Information:<br>
 <div id="ausg"></div>
 </div>
-<div class="content" id="serverSettings">
+<div class="content online" id="serverSettings">
 <span class="sectionHead">LaserBeamer Settings</span><br><br>
 <table><tbody>
 <tr><td>Home-directory:</td><td><input class="serverForm" type="text" name="homeDir"></td></tr>
@@ -32,10 +32,10 @@ Debug-Information:<br>
 <tr><td>Speichern:</td><td><button>Anwenden</button><button>Dauerhaft speichern</button></td></tr>
 </tbody></table>
 </div>
-<div class="content" id="dmxControl">
+<div class="content online" id="dmxControl">
 <span class="sectionHead">DMX Steuerung</span><br><br>
 </div>
-<div class="content" id="liveControl">
+<div class="content online" id="liveControl">
 <div class="splitParent">
 <div class="split2 left">
 <span class="sectionHead">Live Steuerung</span><br><br>
@@ -44,6 +44,7 @@ Debug-Information:<br>
 <button id="delAll" class="UiInteract">DelAll</button><br><br>
 Verf&uuml;gbare Objekttypen:
 <ul id="objList"></ul>
+<select id="vorhObj"></select>
 </div>
 <div class="split2 right">
 Vorschau:<br>
@@ -51,7 +52,7 @@ Vorschau:<br>
 </div>
 </div>
 </div>
-<div class="content" id="programming">
+<div class="content online" id="programming">
 <span class="sectionHead">Sequenz Programmierung</span><br><br>
 </div>
 </div>

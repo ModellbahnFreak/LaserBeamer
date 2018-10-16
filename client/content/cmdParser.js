@@ -5,9 +5,7 @@ function parseCmd(cmd) {
 		switch (cmd) {
 		case "426:":
 			listActive = false;
-			for (var i = 0; i < cmdList.length; i++) {
-				cmdToGuiObj(cmdList[i]);
-			}
+			multipleToGui(cmdList);
 			break;
 		default:
 			cmdList.push(cmd);
@@ -19,42 +17,61 @@ function parseCmd(cmd) {
 			ratio = parseFloat(parts[1]);
 			setPreviewRatio();
 			break;
-		case "243":
+		case "243": //Verfügbare Gui-Objekte
 			populateObjList(parts[1]);
 			break;
-		case "425":
+		case "425": //Onjektliste start
 			listActive = true;
 			cmdList = [];
 			break;
-		case "221":
+		case "221": //Alle gelöscht
 			deleteAll();
 			break;
-		case "222":
+		case "222": //Ein Node gelöscht
 			deleteNode(parts[1]);
 			break;
-		case "201":
+		case "205": //Ein Node geändert
+		case "201": //Ein Node hinzugefügt
 			cmdToGuiObj(parts[1]);
+			break;
+		case "304": //Master helligkeit
+			preview.style.opacity = parts[1];
 			break;
 		default:
 			ausg.innerText += "Unknown: "+event.data+"\n";
 		}
 	}
 }
-var allObj = [];
+var allObj = {};
 function cmdToGuiObj(cmd) {
 	var toDos = cmd.split(";");
-	for (var i = 0; i < allObj.length; i++) {
+	/*for (var i = 0; i < allObj.length; i++) {
 		if (allObj.name == toDos[1]) {
 			updateObj(toDos, allObj.node);
 			return;
 		}
+	}*/
+	if (allObj[toDos[1]]) {
+		updateObj(toDos, cmd, allObj[toDos[1]].node);
+	} else {
+		createObj(toDos, cmd);
 	}
-	createObj(toDos, cmd);
+	allObj[toDos[1]].wasUpdated = true;
+}
+function multipleToGui(list) {
+	for (var i = 0; i < list.length; i++) {
+		cmdToGuiObj(list[i]);
+	}
+	for (var key in allObj) {
+		if (!allObj[key].wasUpdated) {
+			deleteNode(key);
+		}
+	}
 }
 function createObj(toDos, cmd) {
 	switch(toDos[0]) {
 	case "txtSize":
-		showText(toDos, cmd);
+		createText(toDos, cmd);
 		break;
 	case "img":
 		createImg(toDos);
@@ -73,14 +90,79 @@ function createObj(toDos, cmd) {
 		break;
 	}
 }
-function updateObj(toDos, obj) {
+function updateObj(toDos, cmd, obj) {
 	switch(toDos[0]) {
-		
+	case "txtSize":
+		updateText(toDos, cmd, obj)
+		break;
+	case "img":
+		obj.setAttribute("x", parseFloat(toDos[3])*screenW);
+		obj.setAttribute("y", parseFloat(toDos[4])*screenH);
+		obj.setAttribute("width", parseFloat(toDos[5])*screenW);
+		obj.setAttribute("height", parseFloat(toDos[6])*screenH);
+		break;
+	case "vid":
+		obj.setAttribute("x", parseFloat(toDos[4])*screenW);
+		obj.setAttribute("y", parseFloat(toDos[5])*screenH);
+		obj.setAttribute("width", parseFloat(toDos[6])*screenW);
+		obj.setAttribute("height", parseFloat(toDos[7])*screenH);
+		break;
+	case "line":
+		obj.setAttribute("x1", parseFloat(toDos[2])*screenW);
+		obj.setAttribute("y1", parseFloat(toDos[3])*screenH);
+		obj.setAttribute("x2", parseFloat(toDos[4])*screenW);
+		obj.setAttribute("y2", parseFloat(toDos[5])*screenH);
+		obj.style.strokeWidth = parseFloat(toDos[7])*screenW;
+		obj.style.stroke = toDos[6];
+		break;
+	case "rect":
+		updateRect(toDos, obj);
+		break;
+	case "circle":
+		updateCircle(toDos, obj);
+		break;
+	case "xPos":
+		if (obj.tagName == "line") {
+			obj.setAttribute("x1", parseFloat(toDos[2])*screenW);
+		} else if (obj.tagName == "circle") {
+			obj.setAttribute("cx", parseFloat(toDos[2])*screenW);
+		} else {
+			obj.setAttribute("x", parseFloat(toDos[2])*screenW);
+		}
+		break;
+	case "yPos":
+		if (obj.tagName == "line") {
+			obj.setAttribute("y1", parseFloat(toDos[2])*screenH);
+		} else if (obj.tagName == "circle") {
+			obj.setAttribute("cy", parseFloat(toDos[2])*screenH);
+		} else {
+			obj.setAttribute("y", parseFloat(toDos[2])*screenH);
+		}
+		break;
+	case "width":
+		if (obj.tagName == "line") {
+			var x1 = parseFloat(obj.getAttribute("x1"));
+			obj.setAttribute("x2", x1+parseFloat(toDos[2])*screenW);
+		} else if (obj.tagName == "circle") {
+			obj.setAttribute("r", parseFloat(toDos[2])*screenW);
+		} else {
+			obj.setAttribute("width", parseFloat(toDos[2])*screenW);
+		}
+		break;
+	case "height":
+		if (obj.tagName == "line") {
+			var y1 = parseFloat(obj.getAttribute("y1"));
+			obj.setAttribute("y2", y1+parseFloat(toDos[2])*screenH);
+		} else if (obj.tagName == "circle") {
+			obj.setAttribute("r", parseFloat(toDos[2])*screenH);
+		} else {
+			obj.setAttribute("height", parseFloat(toDos[2])*screenH);
+		}
+		break;
 	}
 }
 
-
-function showText(toDos, cmd) {
+function updateText(toDos, cmd, obj) {
 	var textStart = cmd.indexOf("'") + 1;
 	var textEnd = cmd.lastIndexOf("'");
 	var text = cmd.substring(textStart, textEnd);
@@ -92,13 +174,16 @@ function showText(toDos, cmd) {
 	}
 	var textSize = parseFloat(toDos[4])*screenW;
 	var font = toDos[5]
+	obj.setAttribute("x", parseFloat(toDos[2])*screenW);
+	obj.setAttribute("y", parseFloat(toDos[3])*screenH);
+	obj.setAttribute("fill", toDos[toDos.length - 1]);
+	obj.style.font = textSize + "pt " + font;
+	obj.textContent = text;
+}
+function createText(toDos, cmd) {
 	var textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-	textElement.setAttribute("x", parseFloat(toDos[2])*screenW);
-	textElement.setAttribute("y", parseFloat(toDos[3])*screenH);
-	textElement.setAttribute("fill", toDos[toDos.length - 1]);
-	textElement.style.font = textSize + "pt " + font;
-	textElement.textContent = text;
-	allObj.push({name: toDos[1], node: textElement});
+	updateText(textElement);
+	allObj[toDos[1]] = {node: textElement};
 	preview.appendChild(textElement);
 }
 function createVideo(toDos) {
@@ -109,7 +194,8 @@ function createVideo(toDos) {
 	vidElement.setAttribute("height", parseFloat(toDos[7])*screenH);
 	vidElement.style.strokeWidth = 1;
 	vidElement.style.stroke = "#ffffff";
-	allObj.push({name: toDos[1], node: vidElement});
+	//allObj.push({name: toDos[1], node: vidElement});
+	allObj[toDos[1]] = {node: vidElement};
 	preview.appendChild(vidElement);
 }
 function createImg(toDos) {
@@ -120,7 +206,8 @@ function createImg(toDos) {
 	imgElement.setAttribute("height", parseFloat(toDos[6])*screenH);
 	imgElement.style.strokeWidth = 1.5;
 	imgElement.style.stroke = "#ffffff";
-	allObj.push({name: toDos[1], node: imgElement});
+	//allObj.push({name: toDos[1], node: imgElement});
+	allObj[toDos[1]] = {node: imgElement};
 	preview.appendChild(imgElement);
 }
 function createLine(toDos) {
@@ -131,51 +218,85 @@ function createLine(toDos) {
 	lineElement.setAttribute("y2", parseFloat(toDos[5])*screenH);
 	lineElement.style.strokeWidth = parseFloat(toDos[7])*screenW;
 	lineElement.style.stroke = toDos[6];
-	allObj.push({name: toDos[1], node: lineElement});
+	//allObj.push({name: toDos[1], node: lineElement});
+	allObj[toDos[1]] = {node: lineElement};
 	preview.appendChild(lineElement);
+}
+function updateRect(toDos, obj) {
+	obj.setAttribute("x", parseFloat(toDos[2])*screenW);
+	obj.setAttribute("y", parseFloat(toDos[3])*screenH);
+	var elemW = parseFloat(toDos[4])*screenW;
+	var elemH = parseFloat(toDos[5])*screenH;
+	obj.setAttribute("width", elemW);
+	obj.setAttribute("height", elemH);
+	obj.setAttribute("rx", parseFloat(toDos[7])*elemW);
+	obj.setAttribute("ry", parseFloat(toDos[8])*elemH);
+	obj.style.fill = toDos[6];
+	obj.style.strokeWidth = parseFloat(toDos[10])*screenW;
+	obj.style.stroke = toDos[9];
 }
 function createRect(toDos) {
 	var rectElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-	rectElement.setAttribute("x", parseFloat(toDos[2])*screenW);
-	rectElement.setAttribute("y", parseFloat(toDos[3])*screenH);
-	rectElement.setAttribute("width", parseFloat(toDos[4])*screenW);
-	rectElement.setAttribute("height", parseFloat(toDos[5])*screenH);
-	rectElement.setAttribute("rx", parseFloat(toDos[7])*screenW);
-	rectElement.setAttribute("ry", parseFloat(toDos[8])*screenH);
-	rectElement.style.fill = toDos[6];
-	rectElement.style.strokeWidth = parseFloat(toDos[10])*screenW;
-	rectElement.style.stroke = toDos[9];
-	allObj.push({name: toDos[1], node: rectElement});
+	updateRect(toDos, rectElement);
+	//allObj.push({name: toDos[1], node: rectElement});
+	allObj[toDos[1]] = {node: rectElement};
 	preview.appendChild(rectElement);
 }
+function updateCircle(toDos, obj) {
+	obj.setAttribute("cx", parseFloat(toDos[2])*screenW);
+	obj.setAttribute("cy", parseFloat(toDos[3])*screenH);
+	obj.setAttribute("r", parseFloat(toDos[4])*screenW);
+	obj.style.fill = toDos[5];
+	obj.style.strokeWidth = parseFloat(toDos[7])*screenW;
+	obj.style.stroke = toDos[6];
+}
 function createCircle(toDos) {
-	var circleElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-	circleElement.setAttribute("cx", parseFloat(toDos[2])*screenW);
-	circleElement.setAttribute("cy", parseFloat(toDos[3])*screenH);
-	circleElement.setAttribute("r", parseFloat(toDos[4])*screenW);
-	circleElement.style.fill = toDos[5];
-	circleElement.style.strokeWidth = parseFloat(toDos[7])*screenW;
-	circleElement.style.stroke = toDos[6];
-	allObj.push({name: toDos[1], node: circleElement});
+	var circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+	updateCircle(toDos, circleElement);
+	//allObj.push({name: toDos[1], node: circleElement});
+	allObj[toDos[1]] = {node: circleElement};
 	preview.appendChild(circleElement);
 }
 
 
 function deleteAll() {
-	while (allObj.length > 0) {
-		preview.removeChild(allObj[0].node);
-		allObj.splice(0,1);
+	for (var key in allObj) {
+		if (allObj.hasOwnProperty(key)) {
+			preview.removeChild(allObj[key].node);
+			delete allObj[key];
+		}
 	}
 }
 function deleteNode(name) {
-	var delElem = null;
-	for (var i = 0; i < allObj.length; i++) {
-		if (allObj.name == name) {
-			delElem = i;
-		}
+	if (allObj.hasOwnProperty(name)) {
+		preview.removeChild(allObj[name].node);
+		delete allObj[name];
 	}
-	if (delElem) {
-		preview.removeChild(allObj[delElem].node);
-		allObj.splice(delElem,1);
+}
+
+
+function sendCommand(obj) {
+	switch(obj) {
+	case "txt":
+		sock.send("txt;txt1;0.5;0.5;'Text';#ffffff");
+		break;
+	case "txtSize":
+		sock.send("txtSize;txt2;0.5;0.5;0.05;Calibri;'Text';#ffffff");
+		break;
+	case "img":
+		sock.send("img;img1;"+prompt("Dateiname:")+";0.5;0.5;0.25;0.25");
+		break;
+	case "vid":
+		sock.send("vid;vid1;"+prompt("Dateiname:")+";loop;0;0;1;1");
+		break;
+	case "line":
+		sock.send("line;lin1;0;0.5;0.5;0.5;#ffffff;0.01");
+		break;
+	case "rect":
+		sock.send("rect;rect1;0.25;0.25;0.5;0.5;#555555;0.1;0.1;#ffffff;0.1");
+		break;
+	case "circle":
+		sock.send("circle;cir1;0.5;0.5;0.5;#555555;#ffffff;0.1");
+		break;
 	}
 }

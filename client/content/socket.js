@@ -4,6 +4,8 @@ var lblStatus = null;
 var preview = null;
 function init() {
 	preview = document.getElementById("preview");
+	preview.ondragover = allowDrop;
+	preview.ondrop = drop;
 	lblStatus = document.getElementById("statusText");
 	conBtn = document.getElementById("connect");
 	conBtn.innerText = "Verbinden";
@@ -27,11 +29,12 @@ function init() {
 		setPreviewRatio();
 	}
 	//DEBUG:
-	if (sock || true) {
+	if (sock) {
 		callPage(document.getElementById("btnliveControl"));
 	} else {
 		callPage(document.getElementById("btnclientSettings"));
 	}
+	toggleOnline(false);
 }	
 function start() {
 	var ausg = document.getElementById("ausg");
@@ -50,6 +53,7 @@ function start() {
 		if (lblStatus) {
 			lblStatus.innerText = "Verbindung hergestellt";
 		}
+		toggleOnline(true);
 		setPreviewRatio();
 		requestObjList();
 		sock.send("system;refresh;objs");
@@ -69,6 +73,7 @@ function start() {
 		if (lblStatus) {
 			lblStatus.innerText = "Verbindung getrennt";
 		}
+		toggleOnline(false);
 		sock = null;
 	};
 	//ausg.innerText += "Debug: finished init\n";
@@ -140,7 +145,29 @@ function populateObjList(objStr) {
 			var objNeu = document.createElement("li");
 			objNeu.innerText = teile[i].split("-")[1];
 			objNeu.name = teile[i].split("-")[0];
+			objNeu.draggable = true;
+			objNeu.ondragstart = dragstart;
 			objList.appendChild(objNeu);
+		}
+	}
+}
+function drop(e) {
+	e.preventDefault();
+	sendCommand(e.dataTransfer.getData("objName"));
+}
+function allowDrop(e) {
+	e.preventDefault();
+}
+function dragstart(e) {
+	e.dataTransfer.setData("objName", this.name);
+}
+function toggleOnline(visible) {
+	var onlineObjs = document.getElementsByClassName("online");
+	for (var i = 0; i < onlineObjs.length; i++) {
+		if (visible) {
+			onlineObjs[i].style.visibility = "";
+		} else {
+			onlineObjs[i].style.visibility = "hidden";
 		}
 	}
 }
