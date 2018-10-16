@@ -5,12 +5,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Queue;
 
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -119,6 +125,8 @@ public class SocketProcess implements Runnable {
 					case "editSeq":
 						editSeq(ToDos[1]);
 						break;
+					case "filename":
+						setNewFilename(ToDos[1], ToDos[2]);
 					default:
 						/*if (SeqInputAct == true) {
 							createSequence(commText);
@@ -147,6 +155,41 @@ public class SocketProcess implements Runnable {
 		}
 	}
 	
+	private void setNewFilename(String objName, String filename) {
+		//filename;obj;Filename
+		try {
+			URL pfad = null;
+			File datei = new File(filename); 
+			if (!datei.exists()) {
+				_sendRecv.send("102:");
+				System.err.println("102: File doesn't exist");
+				return;
+			}
+			pfad = datei.toURI().toURL();
+			// System.out.println(pfad.toString());
+			for (Node obj : _elem) {
+				if (obj.getId().equals(objName)) {
+					if (obj instanceof ImageView) {
+						Image Bild = new Image(pfad.toString());
+						((ImageView) obj).setImage(Bild);
+						((ImageView) obj).getProperties().put("path", datei.toString());
+					} else if (obj instanceof MediaView) {
+						Media m = new Media(pfad.toURI().toString());
+						MediaPlayer player = new MediaPlayer(m);
+						((MediaView) obj).setMediaPlayer(player);
+						((MediaView) obj).getProperties().put("path", datei.toString());
+					}
+				}
+			}
+		} catch (URISyntaxException e) {
+			_sendRecv.send("102:");
+			System.err.println("102: File open error");
+		} catch (MalformedURLException e) {
+			_sendRecv.send("102:");
+			System.err.println("102: File open error");
+		}
+	}
+
 	private void editSeq(String seqName) {
 		Sequenz seqEdit = null;
 		for (Sequenz seq : _sequenzen) {
@@ -293,12 +336,13 @@ public class SocketProcess implements Runnable {
 					} else if (obj instanceof Rectangle) {
 						((Rectangle) obj).setHeight(Double.parseDouble(value) * Gui.INSTANCE.scene.getHeight());
 					} else if (obj instanceof Circle) {
-						((Circle) obj).setRadius((Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth())/2.0);
+						((Circle) obj).setRadius((Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth()));
 					} else if (obj instanceof Line) {
 						((Line) obj).setEndY(((Line) obj).getStartY() + (Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth()));
 					}
 				}
 			}
+			processCallback.sendAll("205:height;"+objName+";"+Double.parseDouble(value));
 		} catch (NumberFormatException e) {
 			_sendRecv.send("102:");
 			System.err.println("102: Wrong number format");
@@ -316,12 +360,13 @@ public class SocketProcess implements Runnable {
 					} else if (obj instanceof Rectangle) {
 						((Rectangle) obj).setWidth(Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth());
 					} else if (obj instanceof Circle) {
-						((Circle) obj).setRadius((Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth())/2.0);
+						((Circle) obj).setRadius((Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth()));
 					} else if (obj instanceof Line) {
 						((Line) obj).setEndX(((Line) obj).getStartX() + (Double.parseDouble(value) * Gui.INSTANCE.scene.getWidth()));
 					}
 				}
 			}
+			processCallback.sendAll("205:width;"+objName+";"+Double.parseDouble(value));
 		} catch (NumberFormatException e) {
 			_sendRecv.send("102:");
 			System.err.println("102: Wrong number format");
@@ -347,6 +392,7 @@ public class SocketProcess implements Runnable {
 					}
 				}
 			}
+			processCallback.sendAll("205:yPos;"+objName+";"+Double.parseDouble(value));
 		} catch (NumberFormatException e) {
 			_sendRecv.send("102:");
 			System.err.println("102: Wrong number format");
@@ -372,6 +418,7 @@ public class SocketProcess implements Runnable {
 					}
 				}
 			}
+			processCallback.sendAll("205:xPos;"+objName+";"+Double.parseDouble(value));
 		} catch (NumberFormatException e) {
 			_sendRecv.send("102:");
 			System.err.println("102: Wrong number format");
@@ -409,9 +456,9 @@ public class SocketProcess implements Runnable {
 			((Rectangle) BlackoutObj).setHeight(Gui.INSTANCE.scene.getHeight());
 			BlackoutObj.setOpacity(1);
 			synchronized (_sendData) {
-				_sendData.add("304:1");
+				_sendData.add("204:1");
 				_sendData.notifyAll();
-				System.out.println("304: Enabled blackout");
+				System.out.println("204: Enabled blackout");
 			}
 			_blackoutState = 3;
 		}
@@ -420,7 +467,7 @@ public class SocketProcess implements Runnable {
 			BlackoutObj.setOpacity(0);
 			// BlackoutObj.toBack();
 			synchronized (_sendData) {
-				_sendData.add("304:0");
+				_sendData.add("204:0");
 				_sendData.notifyAll();
 				System.out.println("232: Disabled blackout");
 			}
@@ -429,6 +476,7 @@ public class SocketProcess implements Runnable {
 		try {
 			double Helligk = Double.parseDouble(status);
 			Gui.INSTANCE.root.setOpacity(Helligk);
+			processCallback.sendAll("204:"+Helligk);
 		} catch (Exception e) {
 			System.err.println("Keine Zahl");
 			Gui.INSTANCE.root.setOpacity(1);
