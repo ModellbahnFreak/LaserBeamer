@@ -40,7 +40,7 @@ public class Server {
 		netwT.setName("NetzwerkCheckRecv");
 		netwT.setDaemon(true);
 		netwT.start();*/
-		HttpListener listen = new HttpListener(80);
+		HttpListener listen = new HttpListener(einst.getHttpPort());
 		Thread listenT = new Thread(listen);
 		listenT.setName("NetzwerkCheckRecv");
 		listenT.setDaemon(true);
@@ -126,6 +126,14 @@ public class Server {
 						break;
 					case "SeqAutoload":
 						einst.setSeqLoad(zeile.substring("SeqAutoload=".length()).split(";"));
+						break;
+					case "HttpPort":
+						try {
+							einst.setHttpPort(Integer.parseInt(zeile.substring("HttpPort=".length())));
+						} catch (NumberFormatException e) {
+							einst.setHttpPort(80);
+						}
+						break;
 					default:
 						break;
 					}

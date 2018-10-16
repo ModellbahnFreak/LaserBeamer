@@ -20,6 +20,7 @@ public class Settings {
 	private String homeDirectory = "./";
 	private int UDPintertface = 0;
 	private String[] loadSeq;
+	private int httpPort = 80;
 
 	Settings() {
 	}
@@ -181,6 +182,14 @@ public class Settings {
 		loadSeq = seqLoad;
 	}
 	
+	public int getHttpPort() {
+		return httpPort;
+	}
+	
+	public void setHttpPort(int port) {
+		httpPort = port;
+	}
+	
 	@Override
 	public String toString() {
 		String erg = "Einstellungen:\n";
@@ -190,7 +199,8 @@ public class Settings {
 		erg += "\tDmxKanaele: " + Arrays.toString(kanaele) + "\n";
 		erg += "\thomeDir: " + homeDirectory + "\n";
 		erg += "\tUdpInterface: " + UDPintertface + "\n";
-		erg += "\tAutoloadSeq: " + Arrays.deepToString(loadSeq);
+		erg += "\tAutoloadSeq: " + Arrays.deepToString(loadSeq) + "\n";
+		erg += "\tHttpPort: " + httpPort;
 		return erg;
 	}
 }
