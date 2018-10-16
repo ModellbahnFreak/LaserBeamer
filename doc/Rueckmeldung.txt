@@ -11,7 +11,8 @@ Status-Codes:
 		201: Created Node
 		202: Starting Sequence input (End with 'SeqEnd')
 		203: Ending Sequence input (Creating Sequence)
-		304: Enabled/Disabled blackout
+		204: Enabled/Disabled blackout
+		205: Changed Node
 		-211: Playing Media
 		212: Playing Sequence
 		213: Stoping Seq

@@ -33,6 +33,11 @@ exit
 system;screenshot;[1/0]
 system;refresh;[video/img/objs]
 blackout;[1/0]
+xPos;obj;xPosition
+yPos;obj;yPosition
+width;obj;Width
+height;obj;Height
+filename;obj;Filename
 
 Sequence:
 	cue;wait;fadeIn;fadeOut;Active
