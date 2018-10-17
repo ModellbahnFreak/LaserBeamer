@@ -14,7 +14,7 @@ function init() {
 	for (obj in uiListe) {
 		obj.disabled = 1;
 	}
-	document.getElementById("showText").onclick = createText;
+	document.getElementById("showText").onclick = createTextClick;
 	document.getElementById("delAll").onclick = del;
 	document.getElementById("command").onclick = cmd;
 	
@@ -83,7 +83,7 @@ function del() {
 		sock.send("del;all");
 	}
 }
-function createText(text) {
+function createTextClick(text) {
 	if (sock != null) {
 		sock.send("txt;txt1;0.5;0.5;'"+prompt("Anzuzeigender Text:")+"';#FFFF00");
 	}

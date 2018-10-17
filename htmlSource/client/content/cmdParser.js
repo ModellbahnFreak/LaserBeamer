@@ -59,10 +59,14 @@ function cmdToGuiObj(cmd) {
 	allObj[toDos[1]].wasUpdated = true;
 }
 function multipleToGui(list) {
+	for (var key in allObj) {
+		allObj[key].wasUpdated = false;
+	}
 	for (var i = 0; i < list.length; i++) {
 		cmdToGuiObj(list[i]);
 	}
 	for (var key in allObj) {
+		console.log("Checking " + key + ": " + allObj[key].wasUpdated)
 		if (!allObj[key].wasUpdated) {
 			deleteNode(key);
 		}
@@ -182,7 +186,7 @@ function updateText(toDos, cmd, obj) {
 }
 function createText(toDos, cmd) {
 	var textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-	updateText(textElement);
+	updateText(toDos, cmd, textElement);
 	allObj[toDos[1]] = {node: textElement};
 	preview.appendChild(textElement);
 }
