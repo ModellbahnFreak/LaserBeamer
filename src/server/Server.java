@@ -27,7 +27,7 @@ public class Server {
 			settingsFile = args[0];
 		}
 		Queue<String> recvData = new LinkedList<String>();
-		Queue<String> sendData = new LinkedList<String>();
+		//Queue<String> sendData = new LinkedList<String>();
 		if (new File(settingsFile).exists()) {
 			parseSettings(settingsFile);
 		}

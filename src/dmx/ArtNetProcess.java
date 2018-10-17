@@ -2,13 +2,11 @@ package dmx;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.Queue;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.CacheHint;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;

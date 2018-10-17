@@ -203,4 +203,17 @@ public class Settings {
 		erg += "\tHttpPort: " + httpPort;
 		return erg;
 	}
+	
+	public String toFileString() {
+		String erg = "";
+		erg += "\thomeDir: " + homeDirectory + "\n";
+		erg += "\tUdpInterface: " + UDPintertface + "\n";
+		erg += "DmxEnable: " + ArtNetActive + "\n";
+		erg += "\tDmxUniverse: " + universe + "\n";
+		erg += "\tDmxAddr: " + startAddr + "\n";
+		erg += "\tDmxKanaele: " + Arrays.toString(kanaele) + "\n";
+		erg += "\tAutoloadSeq: " + Arrays.deepToString(loadSeq) + "\n";
+		erg += "\tHttpPort: " + httpPort;
+		return erg;
+	}
 }

@@ -8,9 +8,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.LinkedList;
 import java.util.Queue;
 
 import server.Server;
@@ -83,14 +81,14 @@ public class ArtNetRecv implements Runnable {
 				ifaceStr += schnitt.getName() + " (" + schnitt.getDisplayName() + "): ";
 				Enumeration<InetAddress> addressen = schnitt.getInetAddresses();
 				if (addressen.hasMoreElements()) {
-					boolean isLocalhost = false;
+					//boolean isLocalhost = false;
 					boolean isIPV4 = false;
 					InetAddress ipV4 = null;
 					while (addressen.hasMoreElements()) {
 						InetAddress addr = addressen.nextElement();
-						if (addr.getHostAddress().startsWith("127.")) {
+						/*if (addr.getHostAddress().startsWith("127.")) {
 							isLocalhost = true;
-						}
+						}*/
 						if (addr.getAddress().length == 4) {
 							isIPV4 = true;
 							ipV4 = addr;
