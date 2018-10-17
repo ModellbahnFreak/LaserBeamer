@@ -38,6 +38,8 @@ yPos;obj;yPosition
 width;obj;Width
 height;obj;Height
 filename;obj;Filename
+settings;setting;value
+settings;setting;value;save
 
 Sequence:
 	cue;wait;fadeIn;fadeOut;Active
