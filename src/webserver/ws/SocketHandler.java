@@ -7,12 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-import javafx.scene.Node;
-import sequenceNew.Sequenz;
 import server.Server;
 import webserver.http.ProcessCallback;
 import webserver.main.SocketProcess;

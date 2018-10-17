@@ -10,8 +10,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Queue;
-
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -127,6 +125,10 @@ public class SocketProcess implements Runnable {
 						break;
 					case "filename":
 						setNewFilename(ToDos[1], ToDos[2]);
+						break;
+					case "settings":
+						cangeSettings();
+						break;
 					default:
 						/*if (SeqInputAct == true) {
 							createSequence(commText);
@@ -155,6 +157,11 @@ public class SocketProcess implements Runnable {
 		}
 	}
 	
+	private void cangeSettings() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private void setNewFilename(String objName, String filename) {
 		//filename;obj;Filename
 		try {

@@ -14,7 +14,7 @@ public class Sequenz {
 	//									  Framerate
 	private transient Thread SeqT = null;
 	private String seqName = "";
-	private int dmxNum = 0;
+	private int dmxNum = 0; //Nummer unter der die Sequence per DMX abzuspielen ist
 	int frame = 0;
 	
 	private Runnable play = new Runnable() {
@@ -112,6 +112,10 @@ public class Sequenz {
 		} catch (NumberFormatException e) {
 			System.err.println("Konnte DMX-Nummer nicht in Zahl umwandeln.");
 		}
+	}
+	
+	public int getDmxNum() {
+		return dmxNum;
 	}
 
 	private void parseFps(String[] cmdTeil) {

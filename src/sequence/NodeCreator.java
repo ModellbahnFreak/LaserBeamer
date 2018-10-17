@@ -376,9 +376,9 @@ public class NodeCreator {
 			double ypos = ((Rectangle)objekt).getY()/sceneH;
 			double w = ((Rectangle)objekt).getWidth()/sceneW;
 			double h = ((Rectangle)objekt).getHeight()/sceneH;
-			String color = String.valueOf(((Rectangle)objekt).getFill());
-			double ArcW = ((Rectangle)objekt).getArcWidth()/w;
-			double ArcH = ((Rectangle)objekt).getArcHeight()/h;
+			String color = colorToStr(((Rectangle)objekt).getFill());
+			double ArcW = ((Rectangle)objekt).getArcWidth()/((Rectangle)objekt).getWidth();
+			double ArcH = ((Rectangle)objekt).getArcHeight()/((Rectangle)objekt).getHeight();
 			String StrokeC = colorToStr(((Rectangle)objekt).getStroke());
 			double StrokeW = ((Rectangle)objekt).getStrokeWidth()/sceneW;
 			erg = "rect;" + id + ";" + xpos + ";" + ypos + ";" + w + ";" + h + ";" + color + ";" + ArcW + ";" + ArcH + ";" + StrokeC + ";" + StrokeW;
