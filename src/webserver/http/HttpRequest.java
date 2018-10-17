@@ -1,14 +1,17 @@
 package webserver.http;
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.FileNameMap;
 import java.net.Socket;
-import java.nio.file.Files;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +22,8 @@ import java.util.Map.Entry;
 import webserver.main.Sha1;
 
 public class HttpRequest implements Runnable {
+	
+	private static boolean useResource = true;
 
 	private Socket con = null;
 	private boolean finished = false;
@@ -39,8 +44,8 @@ public class HttpRequest implements Runnable {
 			out = new PrintStream(con.getOutputStream());
 			String s;
 			int response = 0;
-			int httpVersion = 0;
-			int httpSubversion = 0;
+			/*int httpVersion = 0;
+			int httpSubversion = 0;*/
 			boolean sendResponsePage = true;
 			HashMap<String, String> keyVal = new HashMap<String, String>();
 			String getPath = "";
@@ -49,9 +54,9 @@ public class HttpRequest implements Runnable {
 				int httpIndex = s.indexOf("HTTP");
 				if (getIndex >= 0 && httpIndex >= 0) {
 					getPath = s.substring(4, httpIndex - 1);
-					int dotIndex = s.indexOf(".", httpIndex + 5);
+					/*int dotIndex = s.indexOf(".", httpIndex + 5);
 					httpVersion = Integer.valueOf(s.substring(httpIndex + 5, dotIndex));
-					httpSubversion = Integer.valueOf(s.substring(dotIndex + 1).trim());
+					httpSubversion = Integer.valueOf(s.substring(dotIndex + 1).trim());*/
 					// System.out.println(con.getInetAddress().getHostAddress() + ": " + getPath);
 				} else {
 					String[] param = s.split(":");
@@ -132,26 +137,59 @@ public class HttpRequest implements Runnable {
 				ausg += param.getKey() + ": " + param.getValue() + "\r\n";
 			}
 			if (sendResponsePage) {
-				//System.out.println("Pfad: " + getPath);
-				File sendFile = new File(getPath);
-				if (!sendFile.exists()) {
+				//System.out.println("Pfad: " + getPath)
+				//File sendFile = new File(getPath);
+				String mimeType = "text/html";
+				InputStream datStream = null;
+				byte[] datei = null;
+				/*if (!sendFile.exists()) {
 					System.err.println("404 HTTP-Version " + httpVersion + "." + httpSubversion);
+					if (sendFile.getParentFile().exists()) {
+						response = 404;
+						getPath = "client/err/404.html";
+						responseStr = "Not Found";
+						ausg = "HTTP/1.1 " + response + " " + responseStr + "\r\n";
+						sendFile = new File(getPath);
+						mimeType = Files.probeContentType(sendFile.toPath());
+						datStream = new FileInputStream(getPath);
+						datei = new byte[(int)sendFile.length()];
+						datStream.read(datei);
+						datStream.close();
+					} else {
+						response = 404;
+						getPath = "404.html";
+						responseStr = "Not Found";
+						ausg = "HTTP/1.1 " + response + " " + responseStr + "\r\n";
+						mimeType = "text/html";
+						datei = page404.getBytes("UTF-8");
+					}
+				} else {
+					mimeType = Files.probeContentType(sendFile.toPath());
+					datStream = new FileInputStream(getPath);
+					datei = new byte[(int)sendFile.length()];
+					datStream.read(datei);
+					datStream.close();
+				}*/
+				datStream = getInputStream(getPath);
+				if (datStream == null) {
 					response = 404;
-					getPath = "client/err/" + response + ".html";
+					getPath = "client/err/404.html";
 					responseStr = "Not Found";
 					ausg = "HTTP/1.1 " + response + " " + responseStr + "\r\n";
-					sendFile = new File(getPath);
+					datStream = getInputStream(getPath);
 				}
-				String mimeType = Files.probeContentType(sendFile.toPath());
-				//System.out.println("Mime-Type: " + mimeType);
-				InputStream datStream = new FileInputStream(getPath);
-				byte[] datei = new byte[(int)sendFile.length()];
-				datStream.read(datei);
-				datStream.close();
+				if (datStream == null) {
+					datei = page404.getBytes("UTF-8");
+					mimeType = "text/html";
+				} else {
+					datei = getFileContent(datStream);
+					datStream.close();
+					mimeType = getMimeType(getPath, datei);
+				}
 				SimpleDateFormat datum = new SimpleDateFormat("EEE, dd MM yyyy HH:mm:ss zzz");
 				ausg += "Date: " + datum.format(new Date()) + "\r\n" +
 						"Server: LaserBeamer/1.2.3\r\n" +
-						"Last-Modified: Mon, 18 Jul 2016 02:36:04 GMT\r\n" +
+						"Last-Modified: " + datum.format(new Date()) + "\r\n" +
 						"Etag: W/\"1234\"\r\n" +
 						"Accept-Ranges: bytes\r\n" + 
 						"Content-Length: " + datei.length + "\r\n" + 
@@ -188,6 +226,29 @@ public class HttpRequest implements Runnable {
 		finished = true;
 	}
 
+	private InputStream getInputStream(String getPath) {
+		if (useResource) {
+			try {
+				URL pfad = getClass().getClassLoader().getResource(getPath);
+				if (pfad != null) {
+					URLConnection con = pfad.openConnection();
+					con.setUseCaches(false);
+					con.setDefaultUseCaches(false);
+					return con.getInputStream();
+				}
+			} catch (IOException e) {
+				//e.printStackTrace();
+			}
+		} else {
+			try {
+				return new FileInputStream("htmlSource/" + getPath);
+			} catch (FileNotFoundException e) {
+				return null;
+			}
+		}
+		return null;
+	}
+
 	public boolean isFinished() {
 		return finished;
 	}
@@ -200,5 +261,94 @@ public class HttpRequest implements Runnable {
 		}
 		return false;
 	}
-
+	
+	private byte[] getFileContent(InputStream stream) {//108203ns = 108,203µs = 0,108203ms
+		byte[] buffer = new byte[4096];
+		byte[] temp = new byte[0];
+		byte[] erg = new byte[0];
+		int anzBytes = 0;
+		try {
+			anzBytes = stream.read(buffer);
+			while (anzBytes > 0) {
+				temp = erg;
+				erg = new byte[temp.length+anzBytes];
+				System.arraycopy(temp, 0, erg, 0, temp.length);
+				System.arraycopy(buffer, 0, erg, temp.length, anzBytes);
+				anzBytes = stream.read(buffer);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return erg;
+	}
+	
+	private String getMimeType(String fName, byte[] data) {
+		String erg = mimeTypen.getContentTypeFor(fName);
+		if (erg == null || erg.isEmpty()) {
+			erg = URLConnection.guessContentTypeFromName(fName);
+			if (erg == null || erg.isEmpty()) {
+				InputStream dataStream = new ByteArrayInputStream(data);
+				try {
+					erg = URLConnection.guessContentTypeFromStream(dataStream);
+					dataStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return erg;
+	}
+	
+	private static FileNameMap mimeTypen = new FileNameMap() {
+		
+		@Override
+		public String getContentTypeFor(String fileName) {
+			String[] parts = fileName.split("\\.");
+			if (parts.length > 0) {
+				String ext = parts[parts.length-1].toLowerCase().trim();
+				switch (ext) {
+				case "htm":
+				case "shtml":
+				case "html":
+					return "text/html";
+				case "js":
+					return "text/javascript";
+				case "css":
+					return "text/css";
+				case "txt":
+					return "text/plain";
+				case "ico":
+					return "image/x-icon";
+				case "jpeg":
+				case "jpg":
+				case "jpe":
+					return "image/jpeg";
+				case "png":
+					return "image/png";
+				case "bmp":
+					return "image/bmp";
+				case "mpeg":
+				case "mpg":
+				case "mpe":
+				case "mp4":
+					return "video/mpeg";
+				case "pdf":
+					return "application/pdf";
+				default:
+					System.err.println("Unknown extension: " + ext);
+				}
+			}
+			return null;
+		}
+	};
+	
+	private static String page404 = "<html>\r\n" + 
+			"<head>\r\n" + 
+			"<title>404</title>\r\n" + 
+			"</head>\r\n" + 
+			"<body style=\"font-family: sans-serif;\">\r\n" + 
+			"<h1>404 - Die Client-Daten konnten nicht geladen werden!</h1>\r\n" + 
+			"Bitte sicherstellen, dass die Anwendung korrekt ausgef&uuml;hrt wird!\r\n" + 
+			"</body>\r\n" + 
+			"</html>";
 }
