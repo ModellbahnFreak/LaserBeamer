@@ -2,11 +2,13 @@ package dmx;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Queue;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.CacheHint;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
@@ -24,8 +26,10 @@ public class ArtNetProcess implements Runnable {
 	byte[] kanaele = null;
 	ImageView gobo = null;
 	MediaView goboVid = null;
+	ColorAdjust farbFilter = null;
 	boolean isVideo = false;
 	Queue<String> _recvData;
+	double playRate = 1;
 	
 	public ArtNetProcess(byte[] recvDmx, Queue<String> recvData) {
 		daten = recvDmx;
@@ -45,15 +49,21 @@ public class ArtNetProcess implements Runnable {
 			}
 		}
 		System.out.println("ArtNetProcessing started");
+		farbFilter = new ColorAdjust();
+		farbFilter.setSaturation(0);
+		//farbFilter.setHue(-0.5);
+		
 		gobo = new ImageView();
 		gobo.setCache(true);
 		gobo.setCacheHint(CacheHint.SPEED);
 		gobo.setId("DMXGobo");
+		gobo.setEffect(farbFilter);
 		
 		goboVid = new MediaView();
 		goboVid.setCache(true);
 		goboVid.setCacheHint(CacheHint.SPEED);
 		goboVid.setId("DMXGoboVideo");
+		goboVid.setEffect(farbFilter);
 		goboVid.opacityProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -116,7 +126,7 @@ public class ArtNetProcess implements Runnable {
 						//if (datenAktuell[i] != 0) {
 							File bild = new File (Server.einst.getHomeDir() + "/gobos/" + (0xff&datenAktuell[i]) + ".png");
 							if (bild.exists()) {
-								System.out.println("Loading " + bild.getAbsolutePath());
+								//System.out.println("Loading " + bild.getAbsolutePath());
 								try {
 									gobo.setImage(new Image(bild.toURI().toURL().toString()));
 									isVideo = false;
@@ -126,7 +136,7 @@ public class ArtNetProcess implements Runnable {
 							} else {
 								File film = new File (Server.einst.getHomeDir() + "/gobos/" + (0xff&datenAktuell[i]) + ".mp4");
 								if (film.exists()) {
-									System.out.println("Loading " + film.getAbsolutePath());
+									//System.out.println("Loading " + film.getAbsolutePath());
 									try {
 										goboVid.setMediaPlayer(new MediaPlayer(new Media(film.toURI().toURL().toString())));
 										goboVid.getMediaPlayer().setOnEndOfMedia(new Runnable() {
@@ -136,6 +146,8 @@ public class ArtNetProcess implements Runnable {
 											}
 										});
 										isVideo = true;
+										System.out.println("Setting rate: " + playRate);
+										goboVid.getMediaPlayer().setRate(playRate);
 										goboVid.getMediaPlayer().play();
 									} catch (MalformedURLException e) {
 										e.printStackTrace();
@@ -154,7 +166,7 @@ public class ArtNetProcess implements Runnable {
 						}*/
 						break;
 					case 5: //Color
-						
+						farbFilter.setHue((0xff&datenAktuell[i])/127.5-1.0);
 						break;
 					case 6: //Size
 						gobo.setScaleX(((0xff&datenAktuell[i])/255.0)*5);
@@ -184,6 +196,16 @@ public class ArtNetProcess implements Runnable {
 						goboVid.setRotate(360-((0xff&datenAktuell[i])/255.0)*360.0);
 						gobo.setRotate(360-((0xff&datenAktuell[i])/255.0)*360.0);
 						break;
+					case 12: //PlaySpeed
+						playRate = (0xff&datenAktuell[i])/255.0*5.0;
+						try {
+							goboVid.getMediaPlayer().setRate(playRate);
+						} catch (NullPointerException e) {
+							
+						}
+						break;
+					case 13: //Saturation
+						farbFilter.setSaturation((0xff&datenAktuell[i])/127.5-1.0);
 					}
 					datenAlt[i] = datenAktuell[i];
 				}

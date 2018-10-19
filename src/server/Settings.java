@@ -133,6 +133,14 @@ public class Settings {
 				tempArr[i] = 11;
 				laenge++;
 				break;
+			case "PlaySpeed":
+				tempArr[i] = 12;
+				laenge++;
+				break;
+			case "Saturation":
+				tempArr[i] = 13;
+				laenge++;
+				break;
 			default:
 				tempArr[i] = -1;/*Reserved*/
 				break;

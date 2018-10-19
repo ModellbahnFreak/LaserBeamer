@@ -23,7 +23,7 @@ import webserver.main.Sha1;
 
 public class HttpRequest implements Runnable {
 	
-	private static boolean useResource = true;
+	private static boolean useResource = false;
 
 	private Socket con = null;
 	private boolean finished = false;
