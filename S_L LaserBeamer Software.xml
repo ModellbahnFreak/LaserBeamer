@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<device type="DMXDevice" dmxaddresscount="12" DefaultDisplayStyle="PREVIEW" dmxcversion="3" ddfversion="1.0">
+<device type="DMXDevice" dmxaddresscount="14" DefaultDisplayStyle="PREVIEW" dmxcversion="3" ddfversion="1.0">
   <information>
     <modell>LaserBeamer Software</modell>
     <vendor>S_L</vendor>
@@ -302,6 +302,15 @@
       </tilt>
     </position>
     <raw dmxchannel="10" name="PatternDimmer" />
+	<ptspeed dmxchannel="12">
+      <range type="linear" mindmx="0" maxdmx="255" minval="0" maxval="5" />
+    </ptspeed>
+    <raw name="Farbton" dmxchannel="5">
+      <range type="linear" mindmx="0" maxdmx="255" minval="0" maxval="2" />
+    </raw>
+	<raw name="Saettigung" dmxchannel="13">
+      <range type="linear" mindmx="0" maxdmx="255" minval="0" maxval="2" />
+    </raw>
   </functions>
   <procedures />
 </device>
