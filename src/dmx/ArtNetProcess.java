@@ -2,7 +2,6 @@ package dmx;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.Queue;
 
 import javafx.beans.value.ChangeListener;
