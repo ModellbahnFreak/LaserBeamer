@@ -1,0 +1,63 @@
+<html>
+<head>
+<title>LaserBeamer</title>
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+<link rel="stylesheet" href="styles.css">
+<script src="cmdParser.js"></script>
+<script src="socket.js"></script>
+</head>
+<body>
+<h2>LaserClient</h2>
+<div id="statusContainer">Status: <span id="statusText">Verbindung getrennt</span></div>
+<br>
+<div id="container">
+<button class="tabMenu offline" id="btnclientSettings">Client Settings</button>
+<button class="tabMenu online" id="btnserverSettings">Server Settings</button>
+<button class="tabMenu online" id="btndmxControl">DMX Steuerung</button>
+<button class="tabMenu online" id="btnliveControl">Live Steuerung</button>
+<button class="tabMenu online" id="btnprogramming">Seq. Programmierung</button>
+<div class="content offline" id="clientSettings">
+<span class="sectionHead">Client Settings</span><br><br>
+<button id="connect">Verbinden</button><br>
+Debug-Information:<br>
+<div id="ausg"></div>
+</div>
+<div class="content online" id="serverSettings">
+<span class="sectionHead">LaserBeamer Settings</span><br><br>
+<table><tbody>
+<tr><td>Home-directory:</td><td><input class="serverForm" type="text" name="homeDir"></td></tr>
+<tr><td>DMX Universum:</td><td><input class="serverForm" type="number" min="0" max="65535" name="dmxUniverse"></td></tr>
+<tr><td>DMX Adresse:</td><td><input class="serverForm" type="number" min="1" max="512" name="dmxStartAddr"></td></tr>
+<tr><td>Sequence Autoload:</td><td><input class="serverForm" type="text" name="seqAutoload"></td></tr>
+<tr><td>Speichern:</td><td><button>Anwenden</button><button>Dauerhaft speichern</button></td></tr>
+</tbody></table>
+</div>
+<div class="content online" id="dmxControl">
+<span class="sectionHead">DMX Steuerung</span><br><br>
+</div>
+<div class="content online" id="liveControl">
+<div class="splitParent">
+<div class="split2 left">
+<span class="sectionHead">Live Steuerung</span><br><br>
+<button id="showText" class="UiInteract">Text</button>
+<button id="command" class="UiInteract">Run</button>
+<button id="delAll" class="UiInteract">DelAll</button><br><br>
+Verf&uuml;gbare Objekttypen:
+<ul id="objList"></ul>
+<select id="vorhObj"></select>
+</div>
+<div class="split2 right">
+Vorschau:<br>
+<svg id="preview"></svg>
+</div>
+</div>
+</div>
+<div class="content online" id="programming">
+<span class="sectionHead">Sequenz Programmierung</span><br><br>
+</div>
+</div>
+<script>
+init();
+</script>
+</body>
+</html>
