@@ -1,13 +1,9 @@
 package de.modellbahnfreak.laserbeamer.dmx;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.BindException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.net.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Queue;
 
@@ -35,12 +31,16 @@ public class ArtNetRecv implements Runnable {
 		try {
 			DatagramSocket socket =	null;
 			try {
-				socket = new DatagramSocket(6454);
+				socket = new DatagramSocket(null);
+				socket.setReuseAddress(true);
+				socket.bind(new InetSocketAddress(6454));
 			} catch (BindException e) {
 				e.printStackTrace();
 				InetAddress lokal = getLocalAddr(Server.einst.getUDPinterface());
 				System.out.println("Trying " + lokal.getHostAddress());
-				socket = new DatagramSocket(6454, lokal);
+				socket = new DatagramSocket(null);
+				socket.setReuseAddress(true);
+				socket.bind(new InetSocketAddress(lokal, 6454));
 			}
 			socket.setBroadcast(true);
 			System.out.println("Listen on " + socket.getLocalAddress() + " on port " + socket.getLocalPort() + " broadcast " + socket.getBroadcast());

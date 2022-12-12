@@ -123,9 +123,17 @@ public class ArtNetProcess implements Runnable {
 						break;
 					case 4: //Pattern
 						//if (datenAktuell[i] != 0) {
-							File bild = new File (Server.einst.getHomeDir() + "/gobos/" + (0xff&datenAktuell[i]) + ".png");
+							String goboNumber = Integer.toString(0xff&datenAktuell[i]);
+							String paddedGoboNumber = goboNumber;
+							while (paddedGoboNumber.length() < 3) {
+								paddedGoboNumber = "0" + paddedGoboNumber;
+							}
+							File bild = new File (Server.einst.getHomeDir() + "/gobos/" + goboNumber + ".png");
+							if (!bild.exists()) {
+								bild = new File (Server.einst.getHomeDir() + "/gobos/" + paddedGoboNumber + ".png");
+							}
 							if (bild.exists()) {
-								//System.out.println("Loading " + bild.getAbsolutePath());
+								System.out.println("Loading " + bild.getAbsolutePath());
 								try {
 									gobo.setImage(new Image(bild.toURI().toURL().toString()));
 									isVideo = false;
@@ -133,9 +141,12 @@ public class ArtNetProcess implements Runnable {
 									e.printStackTrace();
 								}
 							} else {
-								File film = new File (Server.einst.getHomeDir() + "/gobos/" + (0xff&datenAktuell[i]) + ".mp4");
+								File film = new File (Server.einst.getHomeDir() + "/gobos/" + goboNumber + ".mp4");
+								if (!film.exists()) {
+									film = new File (Server.einst.getHomeDir() + "/gobos/" + paddedGoboNumber + ".mp4");
+								}
 								if (film.exists()) {
-									//System.out.println("Loading " + film.getAbsolutePath());
+									System.out.println("Loading " + film.getAbsolutePath());
 									try {
 										goboVid.setMediaPlayer(new MediaPlayer(new Media(film.toURI().toURL().toString())));
 										goboVid.getMediaPlayer().setOnEndOfMedia(new Runnable() {

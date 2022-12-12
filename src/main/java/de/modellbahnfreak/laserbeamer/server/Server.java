@@ -3,9 +3,13 @@ package de.modellbahnfreak.laserbeamer.server;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import de.modellbahnfreak.laserbeamer.webserver.http.HttpListener;
 import de.modellbahnfreak.laserbeamer.dmx.ArtNetRecv;
@@ -21,6 +25,7 @@ public class Server {
 	public static ArrayList<Sequenz> sequenzen = new ArrayList<Sequenz>();
 	
 	public static void main(String[] args) {
+
 		String settingsFile = "settings.ini";
 		if (args.length >= 1) {
 			settingsFile = args[0];
@@ -30,6 +35,9 @@ public class Server {
 		if (new File(settingsFile).exists()) {
 			parseSettings(settingsFile);
 		}
+
+		System.out.println("Home dir: " + new File(einst.getHomeDir()).getAbsolutePath());
+
 		Gui gui = new Gui();
 		Thread guiT = new Thread(gui);
 		guiT.setName("GuiLaunch");
