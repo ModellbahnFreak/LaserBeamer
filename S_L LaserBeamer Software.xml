@@ -286,12 +286,12 @@
       <range type="linear" mindmx="0" maxdmx="255" minval="0" maxval="5" />
     </zoom>
     <prism dmxchannel="7">
-      <step type="open" mindmx="0" maxdmx="0" minval="1" maxval="1" caption="" />
-      <step type="prism" mindmx="1" maxdmx="51" minval="2" maxval="2" caption="" />
-      <step type="prism" mindmx="52" maxdmx="102" minval="3" maxval="3" caption="" />
-      <step type="prism" mindmx="103" maxdmx="153" minval="4" maxval="4" caption="" />
-      <step type="prism" mindmx="154" maxdmx="204" minval="5" maxval="5" caption="" />
-      <step type="prism" mindmx="205" maxdmx="255" minval="6" maxval="6" caption="" />
+      <step type="open" mindmx="0" maxdmx="0" minval="1" maxval="1" caption="Open" />
+      <step type="prism" mindmx="1" maxdmx="51" minval="2" maxval="2" caption="Double" />
+      <step type="prism" mindmx="52" maxdmx="102" minval="3" maxval="3" caption="Tripple" />
+      <step type="prism" mindmx="103" maxdmx="153" minval="4" maxval="4" caption="Quadruple" />
+      <step type="prism" mindmx="154" maxdmx="204" minval="5" maxval="5" caption="Quintuple" />
+      <step type="prism" mindmx="205" maxdmx="255" minval="6" maxval="6" caption="Sixtuple" />
     </prism>
     <position>
       <pan dmxchannel="8">
@@ -302,13 +302,13 @@
       </tilt>
     </position>
     <raw dmxchannel="10" name="PatternDimmer" />
-	<ptspeed dmxchannel="12">
+    <ptspeed dmxchannel="12">
       <range type="linear" mindmx="0" maxdmx="255" minval="0" maxval="5" />
     </ptspeed>
     <raw name="Farbton" dmxchannel="5">
       <range type="linear" mindmx="0" maxdmx="255" minval="0" maxval="2" />
     </raw>
-	<raw name="Saettigung" dmxchannel="13">
+    <raw name="Saettigung" dmxchannel="13">
       <range type="linear" mindmx="0" maxdmx="255" minval="0" maxval="2" />
     </raw>
   </functions>
