@@ -23,7 +23,17 @@ public class Gui extends Application implements Runnable {
 	public ArrayList<Node> addNodeList = new ArrayList<Node>();
 	public ArrayList<Node> delNodeList = new ArrayList<Node>();
 
+	private final String[] args;
+
 	//private final int snapshotRate = 1;// Snapshots per second
+
+	public Gui() {
+		this.args = new String[0];
+	}
+
+	public Gui(String ...args) {
+		this.args = args;
+	}
 
 	@Override
 	public void init() {
@@ -91,6 +101,11 @@ public class Gui extends Application implements Runnable {
 				}
 			}
 		});
+		if (getParameters().getRaw().stream().map(String::toLowerCase).map(String::trim).anyMatch(p -> p.equals("-f") || p.equals("--fullscreen"))) {
+			System.out.println("Launching fullscreen");
+			primaryStage.setFullScreen(true);
+		}
+
 
 		Task<Void> addTask = new Task<Void>() {
 			// Runnable addTask = new Runnable() {
@@ -185,6 +200,6 @@ public class Gui extends Application implements Runnable {
 	@Override
 	public void run() {
 		System.out.println("Gui start");
-		launch("");
+		launch(args);
 	}
 }

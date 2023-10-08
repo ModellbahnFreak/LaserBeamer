@@ -38,7 +38,7 @@ public class Server {
 
 		System.out.println("Home dir: " + new File(einst.getHomeDir()).getAbsolutePath());
 
-		Gui gui = new Gui();
+		Gui gui = new Gui(args);
 		Thread guiT = new Thread(gui);
 		guiT.setName("GuiLaunch");
 		guiT.start();

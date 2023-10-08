@@ -41,3 +41,21 @@ task fatJar(type: Jar) {
     }
     with jar
 }
+
+task packageZip(type: Zip) {
+    archiveFileName = 'LaserBeamer-' + version + '.zip'
+    destinationDirectory = layout.buildDirectory.dir("libs")
+    from (layout.buildDirectory.dir("libs")) {
+        include("*-all.jar")
+    }
+    from (layout.projectDirectory.dir("scripts")) {
+        include("*")
+    }
+    from (layout.projectDirectory.dir("gobos")) {
+        into("gobos")
+    }
+    from (layout.projectDirectory) {
+        include("settings.ini")
+        include("S_L LaserBeamer Software.xml")
+    }
+}
