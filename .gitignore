@@ -1,6 +1,8 @@
 /bin/
 .idea
 *.iml
+gobos/*.mp4
+gobos/*.png
 
 ##### Gradle Stuff #####
 
